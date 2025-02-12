@@ -14,14 +14,13 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.visionConstants;
+import frc.robot.Constants.VisionConstants;
 
 /** Add your docs here. */
 public class Vision {
     private static PhotonCamera camera = new PhotonCamera("PC_Camera");
-    private static PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.LOWEST_AMBIGUITY, visionConstants.kRobotToMainCamTransform);
+    private static PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kRobotToLeftCamTransform);
     public static PhotonPipelineResult result;
     public static Optional<EstimatedRobotPose> estimatedPose;
 
