@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,6 +54,7 @@ public class Pivot extends SubsystemBase {
 
   public Command setAngleCommand(Angle angle){
     return this.runOnce(()->{
+      SmartDashboard.putNumber("Pivot commanded angle", angle.in(Degrees));
       goalAngle = Rotations.of(MathUtil.clamp(angle.in(Degrees), PivotConstants.kMinAngle.in(Degrees), PivotConstants.kMaxAngle.in(Degrees)));
       m_pivotMotor.setControl(m_motionMagicReq.withPosition(angle));
     }).andThen(Commands.idle())
@@ -67,7 +69,11 @@ public class Pivot extends SubsystemBase {
   }
 
   public boolean isAtGoal(){
-    return m_pivotMotor.getPosition().getValue().isNear(goalAngle, PivotConstants.kGoalTolerance);
+    return pivotAngle().isNear(goalAngle, PivotConstants.kGoalTolerance);
+  }
+
+  public Angle pivotAngle(){
+    return m_pivotMotor.getPosition().getValue();
   }
 
   private void setVolts(Voltage volts){
@@ -77,6 +83,6 @@ public class Pivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("pivotAtGoal", isAtGoal());
   }
 }

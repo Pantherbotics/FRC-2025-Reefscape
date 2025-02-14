@@ -65,9 +65,10 @@ public class Elevator extends SubsystemBase {
   public Command setHeightCommand(Distance height){
 
     return this.runOnce(()->{
-      SmartDashboard.putNumber("commanded height", height.in(Inches));
+      SmartDashboard.putNumber("Elevator commanded height", height.in(Inches));
       goalHeight = Inches.of(MathUtil.clamp(height.in(Inches), 0, ElevatorConstants.kElevatorMaxHeight.in(Inches)));
       Angle goalAngle = goalHeight.timesConversionFactor(ElevatorConstants.kConversion.reciprocal());
+      
       m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalAngle));
     }).andThen(Commands.idle())
       .until(this::isAtGoal);
@@ -81,8 +82,11 @@ public class Elevator extends SubsystemBase {
   }
   
   public boolean isAtGoal(){
-    //return MathUtil.isNear(goalHeight.in(Inches), m_leaderMotor.getPosition().getValueAsDouble() * ElevatorConstants.kElevatorRatio * ElevatorConstants.kSprocketPitchCircumference.in(Inches),0.1);
-    return m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).isNear(goalHeight, ElevatorConstants.kGoalTolerance);
+    return elevatorPosition().isNear(goalHeight, ElevatorConstants.kGoalTolerance);
+  }
+
+  public Distance elevatorPosition(){
+    return m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion);
   }
 
   private void setVolts(Voltage volts){
@@ -92,9 +96,8 @@ public class Elevator extends SubsystemBase {
   // unused periodic method
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("isatgoal", isAtGoal());
-    SmartDashboard.putNumber("goalHeight", goalHeight.in(Inches));
-    SmartDashboard.putNumber("Position", m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).in(Inches));
+    SmartDashboard.putBoolean("ElevatorAtGoal", isAtGoal());
+    SmartDashboard.putNumber("ElevatorPosition", elevatorPosition().in(Inches));
   }
 }
 
