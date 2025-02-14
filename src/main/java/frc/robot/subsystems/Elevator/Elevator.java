@@ -5,16 +5,15 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,12 +28,12 @@ public class Elevator extends SubsystemBase {
   private final TalonFX m_leaderMotor = new TalonFX(ElevatorConstants.kLeaderMotorID);
   private final TalonFX m_followerMotor = new TalonFX(ElevatorConstants.kFollowerMotorID);
   private Distance goalHeight = Inches.of(0);
-  private final MotionMagicExpoTorqueCurrentFOC m_motionMagicReq = new MotionMagicExpoTorqueCurrentFOC(0).withSlot(1);
+  private final MotionMagicExpoVoltage m_motionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   
-  private final TorqueCurrentFOC m_torqueReq = new TorqueCurrentFOC(0);
+  private final VoltageOut m_voltReq = new VoltageOut(0);
   private final SysIdRoutine routine = new SysIdRoutine(
     new Config(null, Volts.of(3), null, state -> SignalLogger.writeString("state", state.toString())), 
-    new Mechanism((output)->setCurrent(Amps.of(output.in(Volts))), null, this)
+    new Mechanism(this::setVolts, null, this)
   );
 
   public Elevator () {
@@ -86,8 +85,8 @@ public class Elevator extends SubsystemBase {
     return m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).isNear(goalHeight, ElevatorConstants.kGoalTolerance);
   }
 
-  private void setCurrent(Current current){
-    m_leaderMotor.setControl(m_torqueReq.withOutput(current));
+  private void setVolts(Voltage volts){
+    m_leaderMotor.setControl(m_voltReq.withOutput(volts));
   }
 
   // unused periodic method

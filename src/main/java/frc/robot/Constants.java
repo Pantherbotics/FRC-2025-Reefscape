@@ -13,7 +13,6 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -74,16 +73,6 @@ public class Constants {
                 .withKV(0.12342)
                 .withKG(0.026837)
                 .withKA(0.0016769)
-                .withGravityType(GravityTypeValue.Elevator_Static)
-            )
-            .withSlot1(new Slot1Configs()
-                .withKP(0)
-                .withKI(0)
-                .withKD(0)
-                .withKS(0)
-                .withKV(0)
-                .withKG(0)
-                .withKA(0)
                 .withGravityType(GravityTypeValue.Elevator_Static)
             )
             .withMotionMagic(new MotionMagicConfigs()
