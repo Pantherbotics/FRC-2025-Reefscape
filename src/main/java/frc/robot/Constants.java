@@ -6,17 +6,21 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -115,6 +119,7 @@ public class Constants {
         public static final Angle kGoalTolerance = Degrees.of(2);
         public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
+        public static final double kEncoderToPivotRatio = (25d/45d);
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -128,7 +133,23 @@ public class Constants {
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(20)
-                .withMotionMagicExpo_kV(0.0));
+                .withMotionMagicExpo_kV(0.0)
+                .withMotionMagicExpo_kA(0.0))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(60)
+                .withStatorCurrentLimit(120))
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.CounterClockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake))
+            .withFeedback(new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(kEncoderID)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                .withSensorToMechanismRatio(kEncoderToPivotRatio));
+
+        public static final CANcoderConfiguration kEncoderConfigs = new CANcoderConfiguration()
+            .withMagnetSensor(new MagnetSensorConfigs()
+                .withMagnetOffset(kEncoderOffset)
+                .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
         
 
     }
