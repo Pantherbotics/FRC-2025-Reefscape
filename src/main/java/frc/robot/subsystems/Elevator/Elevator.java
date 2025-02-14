@@ -82,7 +82,7 @@ public class Elevator extends SubsystemBase {
   
   public boolean isAtGoal(){
     //return MathUtil.isNear(goalHeight.in(Inches), m_leaderMotor.getPosition().getValueAsDouble() * ElevatorConstants.kElevatorRatio * ElevatorConstants.kSprocketPitchCircumference.in(Inches),0.1);
-    return m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).isNear(goalHeight, Inches.of(0.1));
+    return m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).isNear(goalHeight, ElevatorConstants.kGoalTolerance);
   }
 
   private void setVolt(Voltage volts){

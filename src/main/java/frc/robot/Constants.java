@@ -10,8 +10,10 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -24,6 +26,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Voltage;
@@ -53,12 +56,13 @@ public class Constants {
         public static final double kElevatorRatio = (16d/48d) * (36d/48d) * (30d/42d);
         public static final Distance kSprocketCircumference = Inches.of(24 * 0.25); // 24 teeth on 1/4" pitch
         public static final Distance kElevatorMaxHeight = Inches.of(31);
+        public static final Distance kGoalTolerance = Inches.of(0.1);
         public static final Per<DistanceUnit, AngleUnit> kConversion = kSprocketCircumference.div(Rotations.of(1/kElevatorRatio));
         
         public static final Voltage kZeroVoltage = Volts.of(-0.5);
 
         public static final TalonFXConfiguration kElevatorConfigs = new TalonFXConfiguration()
-            .withSlot0(new Slot0Configs()
+            .withSlot0(new Slot0Configs() // voltage
                 .withKP(66)//450.42)
                 .withKI(0)
                 .withKD(1.3)//1.943)
@@ -68,8 +72,17 @@ public class Constants {
                 .withKA(0.0016769)
                 .withGravityType(GravityTypeValue.Elevator_Static)
             )
+            .withSlot1(new Slot1Configs()
+                .withKP(0)
+                .withKI(0)
+                .withKD(0)
+                .withKS(0)
+                .withKV(0)
+                .withKG(0)
+                .withKA(0)
+                .withGravityType(GravityTypeValue.Elevator_Static)
+            )
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicAcceleration(90)
                 .withMotionMagicCruiseVelocity(100)
                 .withMotionMagicExpo_kV(0.12342)
                 .withMotionMagicExpo_kA(0.0016769)
@@ -92,8 +105,31 @@ public class Constants {
         public static final TalonFXConfiguration kFolllowerConfigs = 
             kElevatorConfigs.withMotorOutput(new MotorOutputConfigs()
               .withInverted(InvertedValue.CounterClockwise_Positive)  
-            );
-                
+            );   
+    }
+
+    public static class PivotConstants{
+        public static final int kPivotMotorID = 18;
+        public static final int kEncoderID = 18;
+        public static final Angle kEncoderOffset = Degrees.of(0);
+        public static final Angle kGoalTolerance = Degrees.of(2);
+        public static final Angle kMaxAngle = Degrees.of(30);
+        public static final Angle kMinAngle = Degrees.of(-30);
+
+        public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
+            .withSlot0(new Slot0Configs()
+                .withKP(0)
+                .withKI(0)
+                .withKD(0)
+                .withKS(0)
+                .withKV(0)
+                .withKA(0)
+                .withKG(0)
+                .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(new MotionMagicConfigs()
+                .withMotionMagicCruiseVelocity(20)
+                .withMotionMagicExpo_kV(0.0));
+        
 
     }
 
