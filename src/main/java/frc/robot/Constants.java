@@ -120,6 +120,7 @@ public class Constants {
         public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
         public static final double kEncoderToPivotRatio = (25d/45d);
+        public static final double kRotorToPivotRatio = (1d/9d) * (32d/42d) * (12d / 60d);
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -144,7 +145,8 @@ public class Constants {
             .withFeedback(new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(kEncoderID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                .withSensorToMechanismRatio(kEncoderToPivotRatio));
+                .withSensorToMechanismRatio(kEncoderToPivotRatio)
+                .withRotorToSensorRatio(kRotorToPivotRatio / kEncoderToPivotRatio));
 
         public static final CANcoderConfiguration kEncoderConfigs = new CANcoderConfiguration()
             .withMagnetSensor(new MagnetSensorConfigs()
