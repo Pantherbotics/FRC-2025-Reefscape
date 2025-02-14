@@ -36,6 +36,7 @@ public class RobotContainer {
       drive.withVelocityX(joystick.getLeftY()).withVelocityY(joystick.getLeftX()).withRotationalRate(-joystick.getRightX()*2)
       )
     );
+    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
 
     configureBindings();
   }
