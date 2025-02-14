@@ -26,6 +26,7 @@ import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Per;
+import edu.wpi.first.units.measure.Voltage;
 
 /** Add your docs here. */
 public class Constants {
@@ -47,34 +48,35 @@ public class Constants {
     };
 
     public static class ElevatorConstants{
-        public static final int kLeaderMotorID = 13;
-        public static final int kFollowerMotorID = 14;
+        public static final int kLeaderMotorID = 16;
+        public static final int kFollowerMotorID = 17;
         public static final double kElevatorRatio = (16d/48d) * (36d/48d) * (30d/42d);
         public static final Distance kSprocketCircumference = Inches.of(24 * 0.25); // 24 teeth on 1/4" pitch
         public static final Distance kElevatorMaxHeight = Inches.of(31);
-        public static final Per<DistanceUnit, AngleUnit> kConversion = kSprocketCircumference.div(Rotations.of(kElevatorRatio));
+        public static final Per<DistanceUnit, AngleUnit> kConversion = kSprocketCircumference.div(Rotations.of(1/kElevatorRatio));
         
+        public static final Voltage kZeroVoltage = Volts.of(-0.5);
 
         public static final TalonFXConfiguration kElevatorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                .withKP(0)
+                .withKP(66)//450.42)
                 .withKI(0)
-                .withKD(0)
-                .withKS(0)
-                .withKV(0)
-                .withKG(0)
-                .withKA(0)
+                .withKD(1.3)//1.943)
+                .withKS(0.20929)
+                .withKV(0.12342)
+                .withKG(0.026837)
+                .withKA(0.0016769)
                 .withGravityType(GravityTypeValue.Elevator_Static)
             )
             .withMotionMagic(new MotionMagicConfigs()
                 .withMotionMagicAcceleration(90)
                 .withMotionMagicCruiseVelocity(100)
-                .withMotionMagicExpo_kV(0.5)
-                .withMotionMagicExpo_kA(0.5)
+                .withMotionMagicExpo_kV(0.12342)
+                .withMotionMagicExpo_kA(0.0016769)
             )
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(90)
-                .withSupplyCurrentLimit(70)
+                .withStatorCurrentLimit(10)
+                .withSupplyCurrentLimit(100)
             )
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)
@@ -82,9 +84,9 @@ public class Constants {
             )
             .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                 .withForwardSoftLimitThreshold(kElevatorMaxHeight.in(Inches)*kSprocketCircumference.in(Inches) * (1/kElevatorRatio))
-                .withForwardSoftLimitEnable(true)
+                .withForwardSoftLimitEnable(false)
                 .withReverseSoftLimitThreshold(0)
-                .withReverseSoftLimitEnable(true)
+                .withReverseSoftLimitEnable(false)
             );
 
         public static final TalonFXConfiguration kFolllowerConfigs = 

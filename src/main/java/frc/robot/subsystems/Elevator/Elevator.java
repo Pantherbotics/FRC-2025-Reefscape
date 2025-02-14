@@ -1,6 +1,9 @@
 package frc.robot.subsystems.Elevator;
 
 import static edu.wpi.first.units.Units.*;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -10,10 +13,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants.ElevatorConstants;
 
@@ -22,34 +28,50 @@ public class Elevator extends SubsystemBase {
   private final TalonFX m_followerMotor = new TalonFX(ElevatorConstants.kFollowerMotorID);
   private Distance goalHeight = Inches.of(0);
   private final MotionMagicExpoTorqueCurrentFOC m_motionMagicReq = new MotionMagicExpoTorqueCurrentFOC(0);
+  
   private final VoltageOut m_voltReq = new VoltageOut(0);
   private final SysIdRoutine routine = new SysIdRoutine(
-    new Config(null, null, null), 
-    new Mechanism(null, null, null)
+    new Config(null, Volts.of(3), null, state -> SignalLogger.writeString("state", state.toString())), 
+    new Mechanism(this::setVolt, null, this)
   );
-
 
   public Elevator () {
     m_leaderMotor.getConfigurator().apply(ElevatorConstants.kElevatorConfigs);
     m_followerMotor.getConfigurator().apply(ElevatorConstants.kFolllowerConfigs);
     m_followerMotor.setControl(new Follower(ElevatorConstants.kLeaderMotorID, true));
+
+    BaseStatusSignal.setUpdateFrequencyForAll(250,
+    m_leaderMotor.getPosition(),
+    m_leaderMotor.getVelocity(),
+    m_leaderMotor.getMotorVoltage(),
+    m_leaderMotor.getTorqueCurrent());
+
+    SmartDashboard.putData(this);
   }
 
   public Command zeroEncoder(){
     return this.startEnd(
-      ()->m_leaderMotor.setControl(new VoltageOut(Volts.of(-2))),
+      ()->m_leaderMotor.setControl(new VoltageOut(ElevatorConstants.kZeroVoltage)),
       ()->m_leaderMotor.setControl(new NeutralOut())
     ).finallyDo(
-      (interrupt)->{ if (!interrupt){ m_leaderMotor.setPosition(Degrees.of(0)); } }
+      ()->m_leaderMotor.setPosition(Degrees.of(0))//(interrupt)->{ if (!interrupt){ m_leaderMotor.setPosition(Degrees.of(0)); } }
     ).until(
-      ()->m_followerMotor.getStatorCurrent().getValue().gt(Amps.of(20))
+      ()->m_followerMotor.getStatorCurrent().getValue().gt(Amps.of(7))
     );
   }
 
   public Command setHeightCommand(Distance Height){
+    SmartDashboard.putNumber("thing", Height.in(Inches));
     goalHeight = Inches.of(MathUtil.clamp(Height.in(Inches), 0, ElevatorConstants.kElevatorMaxHeight.in(Inches)));
-    return this.startEnd(()->m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalHeight.timesConversionFactor(ElevatorConstants.kConversion.reciprocal()))), null)
-    .until(this::isAtGoal);
+    return this.run(()->m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalHeight.timesConversionFactor(ElevatorConstants.kConversion.reciprocal()))))
+    .until(this::isAtGoal).withName("setHeight");
+  }
+
+  public Command sysIdDynamicCommand(Direction direction){
+    return routine.dynamic(direction);
+  }
+  public Command sysIdQuasistaticCommand(Direction direction){
+    return routine.quasistatic(direction);
   }
   
   public boolean isAtGoal(){
@@ -63,6 +85,10 @@ public class Elevator extends SubsystemBase {
 
   // unused periodic method
   @Override
-  public void periodic() {}
+  public void periodic() {
+    SmartDashboard.putBoolean("isatgoal", isAtGoal());
+    SmartDashboard.putNumber("goalHeight", goalHeight.in(Inches));
+    SmartDashboard.putNumber("Position", m_leaderMotor.getPosition().getValue().timesConversionFactor(ElevatorConstants.kConversion).in(Inches));
+  }
 }
 
