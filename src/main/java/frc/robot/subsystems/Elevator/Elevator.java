@@ -11,11 +11,12 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -60,11 +61,16 @@ public class Elevator extends SubsystemBase {
     );
   }
 
-  public Command setHeightCommand(Distance Height){
-    SmartDashboard.putNumber("thing", Height.in(Inches));
-    goalHeight = Inches.of(MathUtil.clamp(Height.in(Inches), 0, ElevatorConstants.kElevatorMaxHeight.in(Inches)));
-    return this.run(()->m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalHeight.timesConversionFactor(ElevatorConstants.kConversion.reciprocal()))))
-    .until(this::isAtGoal).withName("setHeight");
+
+  public Command setHeightCommand(Distance height){
+
+    return this.runOnce(()->{
+      SmartDashboard.putNumber("commanded height", height.in(Inches));
+      goalHeight = Inches.of(MathUtil.clamp(height.in(Inches), 0, ElevatorConstants.kElevatorMaxHeight.in(Inches)));
+      Angle goalAngle = goalHeight.timesConversionFactor(ElevatorConstants.kConversion.reciprocal());
+      m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalAngle));
+    }).andThen(Commands.idle())
+      .until(this::isAtGoal);
   }
 
   public Command sysIdDynamicCommand(Direction direction){

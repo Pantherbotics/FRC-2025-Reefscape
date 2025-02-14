@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
@@ -51,7 +52,6 @@ public class RobotContainer {
     joystick.back().and(joystick.b()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kReverse));
 
     joystick.x().onTrue(elevator.setHeightCommand(Inches.of(20)));
-    joystick.povLeft().onTrue(elevator.setHeightCommand(Inches.of(3)));
     joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
 
     joystick.povDown().onTrue(elevator.zeroEncoder());
