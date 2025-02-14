@@ -6,6 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -101,8 +105,11 @@ public class Constants {
         public static final int kEncoderID = 18;
         public static final Angle kEncoderOffset = Degrees.of(0);
         public static final Angle kGoalTolerance = Degrees.of(2);
-        public static final Angle kMaxAngle = Degrees.of(30);
+
+        public static final Angle kMaxAngle = Degrees.of(40);
         public static final Angle kMinAngle = Degrees.of(-30);
+        public static final Angle kMoveAngle = Degrees.of(-10);
+
         public static final double kEncoderToPivotRatio = (25d/45d);
         public static final double kRotorToPivotRatio = (1d/9d) * (32d/42d) * (12d / 60d);
 
@@ -136,7 +143,43 @@ public class Constants {
             .withMagnetSensor(new MagnetSensorConfigs()
                 .withMagnetOffset(kEncoderOffset)
                 .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
-        
+    }
+
+    public static class RobotStates{
+
+        public class EEState{
+            public Distance distance;
+            public Angle angle;
+            public EEState(Distance dist, Angle angle){
+                this.distance = dist;
+                this.angle = angle;
+            }
+        }
+
+        private static final Distance minUnsafeHeight = Inches.of(16.875);
+        private static final Distance maxUnsafeHeight = Inches.of(25.5);
+        private static final Angle maxUnsafeAngle = Degrees.of(14);
+
+        private static boolean passesThroughUnsafeZone(Distance startHeight, Distance endHeight) {
+            return (startHeight.lt(minUnsafeHeight)&& endHeight.gt(minUnsafeHeight)) ||
+                   (startHeight.lt(maxUnsafeHeight) && endHeight.gt(maxUnsafeHeight));
+        }
+
+        public static boolean needsSafeMovement(Distance startDist, Angle startAngle, EEState endState){
+            return passesThroughUnsafeZone(startDist, endState.distance) && (startAngle.gt(maxUnsafeAngle) || endState.angle.gt(maxUnsafeAngle));
+        }
+
+        Dictionary<String, EEState> EEStates = new Hashtable<>();
+
+        public void setupPositionTable(){
+            EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
+            EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-16.5)));
+            EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
+            EEStates.put("coral station", new EEState(Inches.of(7.75), Degrees.of(-28)));
+            EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));
+            EEStates.put("Algae 2", new EEState(Inches.of(31), Degrees.of(-25.5)));
+            EEStates.put("Stow", new EEState(Inches.of(0), Degrees.of(35)));
+        }
 
     }
 
