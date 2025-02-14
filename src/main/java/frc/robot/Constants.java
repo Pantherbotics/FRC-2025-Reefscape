@@ -147,7 +147,7 @@ public class Constants {
 
     public static class RobotStates{
 
-        public class EEState{
+        public static class EEState{
             public Distance distance;
             public Angle angle;
             public EEState(Distance dist, Angle angle){
@@ -169,9 +169,9 @@ public class Constants {
             return passesThroughUnsafeZone(startDist, endState.distance) && (startAngle.gt(maxUnsafeAngle) || endState.angle.gt(maxUnsafeAngle));
         }
 
-        Dictionary<String, EEState> EEStates = new Hashtable<>();
+        static Dictionary<String, EEState> EEStates = new Hashtable<>();
 
-        public void setupPositionTable(){
+        public static void setupPositionTable(){
             EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
             EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-16.5)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));

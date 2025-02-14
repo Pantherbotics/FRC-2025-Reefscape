@@ -28,5 +28,6 @@ public class MoveEndEffector extends SequentialCommandGroup {
         ()->RobotStates.needsSafeMovement(elevator.elevatorPosition(), pivot.pivotAngle(), endState)
       )
     );
+    addRequirements(elevator, pivot);
   }
 }
