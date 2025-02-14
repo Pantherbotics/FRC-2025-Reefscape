@@ -19,23 +19,32 @@ import frc.robot.Constants.VisionConstants;
 
 /** Add your docs here. */
 public class Vision {
-    private static PhotonCamera camera = new PhotonCamera("PC_Camera");
-    private static PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kRobotToLeftCamTransform);
-    public static PhotonPipelineResult result;
-    public static Optional<EstimatedRobotPose> estimatedPose;
+    private static final PhotonCamera m_leftCamera = new PhotonCamera(VisionConstants.kLeftCamName);
+    private static final PhotonCamera m_rightCamera = new PhotonCamera(VisionConstants.kRightCamName);
+    private static final PhotonPoseEstimator m_leftEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToLeftCamTransform);
+    private static final PhotonPoseEstimator m_rightEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCamTransform);
+    public static PhotonPipelineResult m_leftResult;
+    public static PhotonPipelineResult m_rightResult;
+    public static Optional<EstimatedRobotPose> leftEstimatedPose;
+    public static Optional<EstimatedRobotPose> rightEstimatedPose;
+    public static Optional<EstimatedRobotPose>[] estimatedPoses;
 
     public static void setup(){
-        poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        m_leftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        m_rightEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     public static void updateCamera(){
-        result = camera.getLatestResult();
-        estimatedPose = poseEstimator.update(result);
-        if (estimatedPose.isPresent()){
+        m_leftResult = m_leftCamera.getLatestResult();
+        leftEstimatedPose = m_leftEstimator.update(m_leftResult);
+        m_rightResult = m_rightCamera.getLatestResult();
+        rightEstimatedPose = m_rightEstimator.update(m_rightResult);
+
+        if (leftEstimatedPose.isPresent()){
             double[]pose = new double[3];
-            pose[0] = estimatedPose.get().estimatedPose.getX();
-            pose[1] = estimatedPose.get().estimatedPose.getY();
-            pose[2] = estimatedPose.get().estimatedPose.getRotation().getAngle();
+            pose[0] = leftEstimatedPose.get().estimatedPose.getX();
+            pose[1] = leftEstimatedPose.get().estimatedPose.getY();
+            pose[2] = leftEstimatedPose.get().estimatedPose.getRotation().getAngle();
             SmartDashboard.putNumberArray("pose", pose);
         }
         
