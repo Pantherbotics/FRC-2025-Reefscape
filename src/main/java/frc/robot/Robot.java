@@ -24,10 +24,15 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     Vision.updateCamera();
-    if (Vision.estimatedPose.isPresent()){
-      var pose = Vision.estimatedPose.get();
-      m_robotContainer.addVisionMeasurement(pose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(pose.timestampSeconds));
+    if (Vision.leftEstimatedPose.isPresent()){
+      var leftPose = Vision.leftEstimatedPose.get();
+      m_robotContainer.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(leftPose.timestampSeconds));
     }
+    if (Vision.rightEstimatedPose.isPresent()){
+      var rightPose = Vision.leftEstimatedPose.get();
+      m_robotContainer.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(rightPose.timestampSeconds));
+    }
+    
     CommandScheduler.getInstance().run();
   }
 
