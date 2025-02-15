@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
+import au.grapplerobotics.CanBridge;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +19,7 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
+    CanBridge.runTCP();
     Vision.setup();
     RobotStates.setupPositionTable();
     m_robotContainer = new RobotContainer();

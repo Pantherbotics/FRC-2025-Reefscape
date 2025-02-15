@@ -49,8 +49,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     
-    // joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
-    // joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
+    joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
+    joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
 
     // Elevator
     // joystick.start().and(joystick.a()).whileTrue(elevator.sysIdDynamicCommand(Direction.kForward));
@@ -65,17 +65,21 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     
     // pivot
-    joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
-    joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
-    joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
-    joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
+    // joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
+    // joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
+    // joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
+    // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
 
     
     //joystick.povUp().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")));
-    joystick.x().onTrue(elevator.setHeightCommand(Inches.of(18)));
-    joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
-    joystick.a().onTrue(elevator.setHeightCommand(Inches.of(15)));
-    joystick.b().onTrue(elevator.setHeightCommand(Inches.of(29)));
+    // joystick.x().onTrue(elevator.setHeightCommand(Inches.of(18)));
+    // joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
+    // joystick.a().onTrue(elevator.setHeightCommand(Inches.of(15)));
+    // joystick.b().onTrue(elevator.setHeightCommand(Inches.of(29)));
+    joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(18)));
+    joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
+    joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-18)));
+    joystick.b().onTrue(pivot.setAngleCommand(Degrees.of(5)));
 
     joystick.povDown().onTrue(elevator.zeroEncoder());
 

@@ -103,30 +103,30 @@ public class Constants {
     public static class PivotConstants{
         public static final int kPivotMotorID = 18;
         public static final int kEncoderID = 18;
-        public static final Angle kEncoderOffset = Degrees.of(0);
+        public static final Angle kEncoderOffset = Rotations.of(-0.372803);
         public static final Angle kGoalTolerance = Degrees.of(2);
 
-        public static final Angle kMaxAngle = Degrees.of(40);
+        public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
         public static final Angle kMoveAngle = Degrees.of(-10);
 
-        public static final double kEncoderToPivotRatio = (25d/45d);
-        public static final double kRotorToPivotRatio = (1d/9d) * (32d/42d) * (12d / 60d);
+        public static final double kEncoderToPivotRatio = (45d/25d);
+        public static final double kRotorToPivotRatio = (9d/1d) * (42d/32d) * (60d / 12d);
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                .withKP(0)
+                .withKP(8.1975)
                 .withKI(0)
-                .withKD(0)
-                .withKS(0)
-                .withKV(0)
-                .withKA(0)
-                .withKG(0)
+                .withKD(1.0072)
+                .withKS(0.27287)
+                .withKV(3.8658)
+                .withKA(0.08326)
+                .withKG(0.13463)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(20)
-                .withMotionMagicExpo_kV(0.0)
-                .withMotionMagicExpo_kA(0.0))
+                .withMotionMagicCruiseVelocity(30)
+                .withMotionMagicExpo_kV(3.8658)
+                .withMotionMagicExpo_kA(0.13463))
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(60)
                 .withStatorCurrentLimit(120))
