@@ -30,7 +30,7 @@ public class Elevator extends SubsystemBase {
   private Distance goalHeight = Inches.of(0);
   private final MotionMagicExpoVoltage m_motionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   
-  private final VoltageOut m_voltReq = new VoltageOut(0);
+  private final VoltageOut m_voltReq = new VoltageOut(0).withEnableFOC(true);
   private final SysIdRoutine routine = new SysIdRoutine(
     new Config(null, Volts.of(3), null, state -> SignalLogger.writeString("state", state.toString())), 
     new Mechanism(this::setVolts, null, this)

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import static edu.wpi.first.units.Units.*;
@@ -36,7 +37,7 @@ public class RobotContainer {
       drive.withVelocityX(joystick.getLeftY()).withVelocityY(joystick.getLeftX()).withRotationalRate(-joystick.getRightX()*2)
       )
     );
-    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
+    //elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
 
     configureBindings();
   }
@@ -64,15 +65,17 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     
     // pivot
-    joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
-    joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
-    joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
-    joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
+    // joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
+    // joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
+    // joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
+    // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
 
     
     //joystick.povUp().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")));
-    joystick.x().onTrue(elevator.setHeightCommand(Inches.of(20)));
+    joystick.x().onTrue(elevator.setHeightCommand(Inches.of(18)));
     joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
+    joystick.a().onTrue(elevator.setHeightCommand(Inches.of(15)));
+    joystick.b().onTrue(elevator.setHeightCommand(Inches.of(29)));
 
     joystick.povDown().onTrue(elevator.zeroEncoder());
 
