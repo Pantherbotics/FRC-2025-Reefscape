@@ -65,13 +65,13 @@ public class Constants {
 
         public static final TalonFXConfiguration kElevatorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs() // voltage
-                .withKP(10)//450.42)
+                .withKP(10.3)//450.42)
                 .withKI(0)
-                .withKD(0)//1.943)
+                .withKD(0.37)//1.943)
                 .withKS(0.2077)
                 .withKV(0.12234)
-                .withKG(0.032012)
-                .withKA(0.0016872)
+                .withKG(0.033)
+                .withKA(0.001678)
                 .withGravityType(GravityTypeValue.Elevator_Static)
             )
             .withMotionMagic(new MotionMagicConfigs()
