@@ -76,10 +76,10 @@ public class RobotContainer {
     // joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
     // joystick.a().onTrue(elevator.setHeightCommand(Inches.of(15)));
     // joystick.b().onTrue(elevator.setHeightCommand(Inches.of(29)));
-    joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(18)));
+    joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
     joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
-    joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-18)));
-    joystick.b().onTrue(pivot.setAngleCommand(Degrees.of(5)));
+    joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
+    joystick.b().onTrue(pivot.setAngleCommand(Degrees.of(15)));
 
     joystick.povDown().onTrue(elevator.zeroEncoder());
 

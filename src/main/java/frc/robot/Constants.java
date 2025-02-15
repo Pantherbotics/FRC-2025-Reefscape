@@ -103,7 +103,7 @@ public class Constants {
     public static class PivotConstants{
         public static final int kPivotMotorID = 18;
         public static final int kEncoderID = 18;
-        public static final Angle kEncoderOffset = Rotations.of(-0.372803);
+        public static final Angle kEncoderOffset = Rotations.of(-0.375488 + 0.25*1.8);
         public static final Angle kGoalTolerance = Degrees.of(2);
 
         public static final Angle kMaxAngle = Degrees.of(30);
@@ -115,13 +115,13 @@ public class Constants {
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                .withKP(8.1975)
+                .withKP(86.811)
                 .withKI(0)
-                .withKD(1.0072)
-                .withKS(0.27287)
-                .withKV(3.8658)
-                .withKA(0.08326)
-                .withKG(0.13463)
+                .withKD(3)
+                .withKS(0.29152)
+                .withKV(6.6959)
+                .withKA(0.14938)
+                .withKG(0.16407)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(30)
@@ -138,7 +138,7 @@ public class Constants {
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
                 .withSensorToMechanismRatio(kEncoderToPivotRatio)
                 .withRotorToSensorRatio(kRotorToPivotRatio / kEncoderToPivotRatio));
-
+            
         public static final CANcoderConfiguration kEncoderConfigs = new CANcoderConfiguration()
             .withMagnetSensor(new MagnetSensorConfigs()
                 .withMagnetOffset(kEncoderOffset)

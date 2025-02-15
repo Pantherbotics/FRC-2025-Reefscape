@@ -35,7 +35,7 @@ public class Pivot extends SubsystemBase {
 
   private final VoltageOut m_voltReq = new VoltageOut(0);
   private final SysIdRoutine routine = new SysIdRoutine(
-    new Config(null, Volts.of(4), null, (state)->SignalLogger.writeString("State", state.toString())),
+    new Config(null, Volts.of(3), null, (state)->SignalLogger.writeString("State", state.toString())),
     new Mechanism(this::setVolts, null, this));
 
   public Pivot() {
@@ -84,5 +84,8 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("pivotAtGoal", isAtGoal());
+    SmartDashboard.putNumber("encoderPosition", m_pivotEncoder.getPosition().getValue().in(Degrees));
+    SmartDashboard.putNumber("motorPosition", m_pivotMotor.getPosition().getValue().in(Degrees));
+    SmartDashboard.putNumber("angle", pivotAngle().in(Degrees));
   }
 }
