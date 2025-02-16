@@ -21,12 +21,14 @@ import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Pivot.Pivot;
+import frc.robot.subsystems.Rollers.Rollers;
 
 public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final Elevator elevator = new Elevator();
   private final Pivot pivot = new Pivot();
+  private final Rollers rollers = new Rollers();
   private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
 

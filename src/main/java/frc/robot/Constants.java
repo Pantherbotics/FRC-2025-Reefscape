@@ -103,7 +103,7 @@ public class Constants {
     public static class PivotConstants{
         public static final int kPivotMotorID = 18;
         public static final int kEncoderID = 18;
-        public static final Angle kEncoderOffset = Rotations.of(-0.375488 + 0.25*1.8);
+        public static final Angle kEncoderOffset = Rotations.of(-0.375488 + (0.25-0.48459)*1.8);
         public static final Angle kGoalTolerance = Degrees.of(2);
 
         public static final Angle kMaxAngle = Degrees.of(30);
@@ -118,15 +118,15 @@ public class Constants {
                 .withKP(86.811)
                 .withKI(0)
                 .withKD(3)
-                .withKS(0.29152)
-                .withKV(6.6959)
-                .withKA(0.14938)
-                .withKG(0.16407)
+                .withKS(0.57337)
+                .withKV(5.3927)
+                .withKA(0.59129)
+                .withKG(0.72754)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(30)
-                .withMotionMagicExpo_kV(3.8658)
-                .withMotionMagicExpo_kA(0.13463))
+                .withMotionMagicExpo_kV(5.3927)
+                .withMotionMagicExpo_kA(0.59129))
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(60)
                 .withStatorCurrentLimit(120))
@@ -147,6 +147,7 @@ public class Constants {
 
     public static class RollerConstants {
         public static final int kLaserCANID = 20;
+        public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
     }
 
     public static class RobotStates{
