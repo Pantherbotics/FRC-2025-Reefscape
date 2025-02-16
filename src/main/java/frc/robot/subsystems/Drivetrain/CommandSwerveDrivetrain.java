@@ -11,7 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
@@ -19,6 +19,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -196,7 +198,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void configureAutoBuilder() {
         try {
-            var config = RobotConfig.fromGUISettings();
+            var config = new RobotConfig(
+            Pounds.of(90),
+            KilogramSquareMeters.of(100), 
+            new ModuleConfig(
+                Inches.of(TunerConstants.FrontRight.WheelRadius), 
+                FeetPerSecond.of(16), // NOT THEORETICAL
+                1.2, 
+                DCMotor.getKrakenX60(1),
+                TunerConstants.FrontRight.DriveMotorGearRatio,
+                Amps.of(TunerConstants.FrontRight.DriveMotorInitialConfigs.CurrentLimits.StatorCurrentLimit),
+                1),
+                this.getModuleLocations()
+            );
+            
             AutoBuilder.configure(
                 () -> getState().Pose,   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
@@ -209,9 +224,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ),
                 new PPHolonomicDriveController(
                     // PID constants for translation
-                    new PIDConstants(10, 0, 0),
+                    DrivetrainConstants.kTranslationConstants,
                     // PID constants for rotation
-                    new PIDConstants(7, 0, 0)
+                    DrivetrainConstants.kHeadingConstants
                 ),
                 config,
                 // Assume the path needs to be flipped for Red vs Blue, this is normally the case

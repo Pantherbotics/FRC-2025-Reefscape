@@ -32,7 +32,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -49,11 +48,8 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDController kXController = new PIDController(1, 0, 0);
-        public static final PIDController kYController = new PIDController(1, 0, 0);
-        public static final PIDController kHeadingController = new PIDController(1, 0, 0);
-        public static final PIDConstants kTranslationConstants = new PIDConstants(1, 0);
-        public static final PIDConstants kHeadingConstants = new PIDConstants(1, 0);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(10, 0);
+        public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
     }
 
     public static class VisionConstants{
