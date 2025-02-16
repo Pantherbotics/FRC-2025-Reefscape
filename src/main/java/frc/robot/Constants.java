@@ -145,6 +145,10 @@ public class Constants {
                 .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
     }
 
+    public static class RollerConstants {
+        public static final int kLaserCANID = 20;
+    }
+
     public static class RobotStates{
 
         public static class EEState{
