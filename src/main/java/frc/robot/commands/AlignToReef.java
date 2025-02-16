@@ -60,7 +60,7 @@ public class AlignToReef extends Command {
   @Override
   public void initialize() {
     unknownSide.set(false);
-    AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape).getTagPose(reefSide + kRedIDoffset).ifPresentOrElse(
+    VisionConstants.kAprilTagLayout.getTagPose(reefSide + kRedIDoffset).ifPresentOrElse(
       (pose) -> goalPose = pose.toPose2d().plus( isLeftSide? VisionConstants.kLeftTransform : VisionConstants.kRightTransform),
       ()->{end = true; unknownSide.set(true);});
 

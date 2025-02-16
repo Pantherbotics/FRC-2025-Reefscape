@@ -12,8 +12,6 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 
@@ -21,8 +19,8 @@ import frc.robot.Constants.VisionConstants;
 public class Vision {
     private static final PhotonCamera m_leftCamera = new PhotonCamera(VisionConstants.kLeftCamName);
     private static final PhotonCamera m_rightCamera = new PhotonCamera(VisionConstants.kRightCamName);
-    private static final PhotonPoseEstimator m_leftEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToLeftCamTransform);
-    private static final PhotonPoseEstimator m_rightEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCamTransform);
+    private static final PhotonPoseEstimator m_leftEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToLeftCamTransform);
+    private static final PhotonPoseEstimator m_rightEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCamTransform);
     public static PhotonPipelineResult m_leftResult;
     public static PhotonPipelineResult m_rightResult;
     public static Optional<EstimatedRobotPose> leftEstimatedPose;
