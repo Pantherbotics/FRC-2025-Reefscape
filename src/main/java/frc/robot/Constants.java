@@ -24,6 +24,13 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.MAXMotionConfig;
+import com.revrobotics.spark.config.SmartMotionConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -150,7 +157,31 @@ public class Constants {
 
     public static class RollerConstants {
         public static final int kLaserCANID = 20;
+        public static final int kRollersMotorID = 1;
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
+        public static final double kMotorToWheelRatio = (24d/50d) * (15d/45d);
+        public static final Voltage kIntakeVoltage = Volts.of(4);
+        public static final Voltage kSeatVoltage = Volts.of(1.5);
+        public static final Voltage kBackVoltage = Volts.of(-0.5);
+        public static final Voltage kOuttakeVoltage = Volts.of(4);
+        
+        public static final MAXMotionConfig kMotionConfig = new MAXMotionConfig()
+            .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+            .allowedClosedLoopError(0.2)
+            .maxAcceleration(2)
+            .maxVelocity(10);
+
+        public static final SparkBaseConfig kMotorConfig = new SparkFlexConfig()
+            .apply(new ClosedLoopConfig()
+                .apply(kMotionConfig)
+                .pidf(
+                    1, 
+                    0, 
+                    0, 
+                    1)
+                )
+            .smartCurrentLimit(50)
+            .idleMode(IdleMode.kCoast);
     }
 
     public static class RobotStates{

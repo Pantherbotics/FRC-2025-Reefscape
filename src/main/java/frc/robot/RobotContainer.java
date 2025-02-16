@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.RobotStates;
+import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -51,8 +52,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     
-    joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
-    joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
+    // joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
+    // joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
 
     // joystick.start().and(joystick.a()).whileTrue(elevator.sysIdDynamicCommand(Direction.kForward));
     // joystick.start().and(joystick.b()).whileTrue(elevator.sysIdDynamicCommand(Direction.kReverse));
@@ -71,12 +72,23 @@ public class RobotContainer {
     // joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
     // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
 
-    
-    //joystick.povUp().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")));
     // joystick.x().onTrue(elevator.setHeightCommand(Inches.of(18)));
     // joystick.y().onTrue(elevator.setHeightCommand(Inches.of(2)));
     // joystick.a().onTrue(elevator.setHeightCommand(Inches.of(15)));
     // joystick.b().onTrue(elevator.setHeightCommand(Inches.of(29)));
+
+    //joystick.povUp().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")));
+    //joystick.povLeft().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
+    //joystick.povLeft().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")));
+    //joystick.povLeft().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")));
+
+    joystick.leftBumper().onTrue(
+      new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station"))
+      .alongWith(rollers.setRollerSpeed(RollerConstants.kIntakeVoltage))
+      .until(rollers::hasCoral)
+      .andThen(Commands.waitSeconds(0.1))
+      .andThen(rollers.seatCoral())
+    );
 
     joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
     joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
