@@ -31,6 +31,7 @@ import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -59,7 +60,7 @@ public class Constants {
         public static final String kLeftCamName = "leftCam";
         public static final String kRightCamName = "rightCam";
 
-        public static final AprilTagFieldLayout kAprilTagLayout = VisionConstants.kAprilTagLayout;
+        public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(-6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(-10)));
