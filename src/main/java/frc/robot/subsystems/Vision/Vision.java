@@ -12,7 +12,11 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructArrayTopic;
 import frc.robot.Constants.VisionConstants;
 
 /** Add your docs here. */
@@ -25,7 +29,12 @@ public class Vision {
     public static PhotonPipelineResult m_rightResult;
     public static Optional<EstimatedRobotPose> leftEstimatedPose;
     public static Optional<EstimatedRobotPose> rightEstimatedPose;
-    public static Optional<EstimatedRobotPose>[] estimatedPoses;
+    public static Pose3d[] estimatedPoses = new Pose3d[]{Pose3d.kZero, Pose3d.kZero};
+
+    private final static NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private final static NetworkTable table = inst.getTable("Vision Estimations");
+    private final static StructArrayTopic<Pose3d> topic = table.getStructArrayTopic("Poses", Pose3d.struct);
+    private final static StructArrayPublisher<Pose3d> pub = topic.publish();
 
     public static void setup(){
         m_leftEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -38,14 +47,12 @@ public class Vision {
         m_rightResult = m_rightCamera.getLatestResult();
         rightEstimatedPose = m_rightEstimator.update(m_rightResult);
 
-        if (leftEstimatedPose.isPresent()){
-            double[]pose = new double[3];
-            pose[0] = leftEstimatedPose.get().estimatedPose.getX();
-            pose[1] = leftEstimatedPose.get().estimatedPose.getY();
-            pose[2] = leftEstimatedPose.get().estimatedPose.getRotation().getAngle();
-            SmartDashboard.putNumberArray("pose", pose);
-        }
-        
+        leftEstimatedPose.ifPresent(
+            (pose) -> estimatedPoses[0] = pose.estimatedPose);
+        rightEstimatedPose.ifPresent(
+            (pose) -> estimatedPoses[1] = pose.estimatedPose);
+
+        pub.set(estimatedPoses);
 
     } 
     
