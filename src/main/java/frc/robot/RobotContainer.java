@@ -6,10 +6,13 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -34,6 +37,8 @@ public class RobotContainer {
   private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
 
+  private final SendableChooser <Command> autoChooser;
+
   public RobotContainer() {
     drivetrain.registerTelemetry(telemetry::telemeterize);
     drivetrain.setDefaultCommand(
@@ -45,6 +50,9 @@ public class RobotContainer {
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
 
     configureBindings();
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", this.autoChooser);
   }
 
   public void addVisionMeasurement(Pose2d pose, double timestamp){
@@ -112,6 +120,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 }
