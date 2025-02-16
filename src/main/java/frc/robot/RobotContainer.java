@@ -81,7 +81,7 @@ public class RobotContainer {
     joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
     joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
     joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
-    // joystick.povDown().onTrue(elevator.zeroEncoder());
+    joystick.povDown().onTrue(elevator.zeroEncoder());
 
   }
 

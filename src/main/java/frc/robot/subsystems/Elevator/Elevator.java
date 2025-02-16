@@ -14,6 +14,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,6 +37,8 @@ public class Elevator extends SubsystemBase {
     new Config(null, Volts.of(3), null, state -> SignalLogger.writeString("state", state.toString())), 
     new Mechanism(this::setVolts, null, this)
   );
+  private boolean hasZeroedSinceBoot = false;
+  private final Alert moveUnzeroed = new Alert("Elevator not zeroed!", AlertType.kWarning);
 
   public Elevator () {
     m_leaderMotor.getConfigurator().apply(ElevatorConstants.kElevatorConfigs);
@@ -55,7 +59,7 @@ public class Elevator extends SubsystemBase {
       ()->m_leaderMotor.setControl(new VoltageOut(ElevatorConstants.kZeroVoltage)),
       ()->m_leaderMotor.setControl(new NeutralOut())
     ).finallyDo(
-      ()->m_leaderMotor.setPosition(Degrees.of(0))//(interrupt)->{ if (!interrupt){ m_leaderMotor.setPosition(Degrees.of(0)); } }
+      ()->{m_leaderMotor.setPosition(Degrees.of(0)); hasZeroedSinceBoot = true; moveUnzeroed.set(false);}//(interrupt)->{ if (!interrupt){ m_leaderMotor.setPosition(Degrees.of(0)); } }
     ).until(
       ()->m_followerMotor.getStatorCurrent().getValue().gt(Amps.of(7))
     );
@@ -63,7 +67,7 @@ public class Elevator extends SubsystemBase {
 
 
   public Command setHeightCommand(Distance height){
-
+    if (hasZeroedSinceBoot){
     return this.runOnce(()->{
       SmartDashboard.putNumber("Elevator commanded height", height.in(Inches));
       goalHeight = Inches.of(MathUtil.clamp(height.in(Inches), 0, ElevatorConstants.kElevatorMaxHeight.in(Inches)));
@@ -72,6 +76,9 @@ public class Elevator extends SubsystemBase {
       m_leaderMotor.setControl(m_motionMagicReq.withPosition(goalAngle));
     }).andThen(Commands.idle())
       .until(this::isAtGoal);
+    } else {
+      return this.runOnce(()->moveUnzeroed.set(true));
+    }
   }
 
   public Command sysIdDynamicCommand(Direction direction){
