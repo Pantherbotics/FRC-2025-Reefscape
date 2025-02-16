@@ -102,7 +102,7 @@ public class RobotContainer {
       .andThen(rollers.setRollerSpeed(Volts.zero()))
     );
 
-    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false).withTimeout(Seconds.of(1)));
+    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
 
     // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
     // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));

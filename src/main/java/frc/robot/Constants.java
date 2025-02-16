@@ -22,6 +22,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.config.PIDConstants;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -49,6 +50,8 @@ public class Constants {
         public static final PIDController kXController = new PIDController(1, 0, 0);
         public static final PIDController kYController = new PIDController(1, 0, 0);
         public static final PIDController kHeadingController = new PIDController(1, 0, 0);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(1, 0);
+        public static final PIDConstants kHeadingConstants = new PIDConstants(1, 0);
     }
 
     public static class VisionConstants{
@@ -56,8 +59,8 @@ public class Constants {
         public static final String kRightCamName = "rightCam";
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(-6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(-10)));
-        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-10), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(10), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-8), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(8), Rotation2d.fromDegrees(-180));
     };
 
     public static class ElevatorConstants{
