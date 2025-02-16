@@ -40,7 +40,8 @@ public class RobotContainer {
       drive.withVelocityX(joystick.getLeftY()).withVelocityY(joystick.getLeftX()).withRotationalRate(-joystick.getRightX()*2)
       )
     );
-    //elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
+    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
 
     configureBindings();
   }
@@ -89,6 +90,15 @@ public class RobotContainer {
       .andThen(Commands.waitSeconds(0.1))
       .andThen(rollers.seatCoral())
       .withName("Intake")
+    );
+
+    joystick.rightBumper().and(rollers::hasCoral).onTrue(
+      new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
+      .raceWith(rollers.setRollerPosition(pivot::pivotAngle))
+      .andThen(Commands.waitUntil(joystick.rightBumper()))
+      .andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage))
+      .andThen(Commands.waitSeconds(0.5))
+      .andThen(rollers.setRollerSpeed(Volts.zero()))
     );
 
     joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));

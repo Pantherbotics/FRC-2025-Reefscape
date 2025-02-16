@@ -8,11 +8,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RollerConstants;
 
 import static edu.wpi.first.units.Units.*;
+
+import java.util.function.Supplier;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -45,8 +46,8 @@ public class Rollers extends SubsystemBase {
     return this.runOnce(() -> m_rollersMotor.setVoltage(voltage));
   }
 
-  public Command setRollerPosition(Angle wheelAngle) {
-    return this.run(() -> m_controller.setReference(wheelAngle.in(Rotations) * RollerConstants.kMotorToWheelRatio, ControlType.kPosition));
+  public Command setRollerPosition(Supplier<Angle> wheelAngle) {
+    return this.run(() -> m_controller.setReference(wheelAngle.get().in(Rotations) * RollerConstants.kMotorToWheelRatio, ControlType.kPosition));
   }
 
   public Command seatCoral(){
