@@ -88,6 +88,7 @@ public class RobotContainer {
       .until(rollers::hasCoral)
       .andThen(Commands.waitSeconds(0.1))
       .andThen(rollers.seatCoral())
+      .withName("Intake")
     );
 
     joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));

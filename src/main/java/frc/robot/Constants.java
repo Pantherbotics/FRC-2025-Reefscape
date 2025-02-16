@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Map;
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -26,7 +24,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
-import com.revrobotics.spark.config.SmartMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
@@ -119,7 +116,6 @@ public class Constants {
 
         public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
-        public static final Angle kMoveAngle = Degrees.of(-10);
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
@@ -198,6 +194,7 @@ public class Constants {
         private static final Distance minUnsafeHeight = Inches.of(16.875);
         private static final Distance maxUnsafeHeight = Inches.of(25.5);
         private static final Angle maxUnsafeAngle = Degrees.of(14);
+        public static final Angle kMoveAngle = Degrees.of(0);
 
         private static boolean passesThroughUnsafeZone(Distance startHeight, Distance endHeight) {
             return (startHeight.lt(minUnsafeHeight)&& endHeight.gt(minUnsafeHeight)) ||
