@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
+import frc.robot.commands.AlignToReef;
 import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -101,10 +102,12 @@ public class RobotContainer {
       .andThen(rollers.setRollerSpeed(Volts.zero()))
     );
 
-    joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
-    joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
-    joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
-    joystick.povDown().onTrue(elevator.zeroEncoder());
+    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false).withTimeout(Seconds.of(1)));
+
+    // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
+    // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
+    // joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
+    // joystick.povDown().onTrue(elevator.zeroEncoder());
 
   }
 
