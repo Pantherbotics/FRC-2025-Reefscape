@@ -54,9 +54,9 @@ public class Pivot extends SubsystemBase {
 
   public Command setAngleCommand(Angle angle){
     return this.runOnce(()->{
-      SmartDashboard.putNumber("Pivot commanded angle", angle.in(Degrees));
-      goalAngle = Rotations.of(MathUtil.clamp(angle.in(Degrees), PivotConstants.kMinAngle.in(Degrees), PivotConstants.kMaxAngle.in(Degrees)));
-      m_pivotMotor.setControl(m_motionMagicReq.withPosition(angle));
+      goalAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), PivotConstants.kMinAngle.in(Degrees), PivotConstants.kMaxAngle.in(Degrees))).minus(Degrees.of(90));
+      SmartDashboard.putNumber("Pivot commanded angle", goalAngle.in(Degrees));
+      m_pivotMotor.setControl(m_motionMagicReq.withPosition(goalAngle));
     }).andThen(Commands.idle())
     .until(this::isAtGoal);
   }

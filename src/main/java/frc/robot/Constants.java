@@ -103,36 +103,37 @@ public class Constants {
     public static class PivotConstants{
         public static final int kPivotMotorID = 18;
         public static final int kEncoderID = 18;
-        public static final Angle kEncoderOffset = Rotations.of(-0.375488 + (0.25-0.48459)*1.8);
+        
+        public static final double kEncoderToPivotRatio = (45d/25d);
+        public static final double kRotorToPivotRatio = (9d/1d) * (42d/32d) * (60d / 12d);
+
+        public static final Angle kEncoderOffset = Rotations.of(0.625244 - 0.25*kEncoderToPivotRatio);
         public static final Angle kGoalTolerance = Degrees.of(2);
 
         public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
         public static final Angle kMoveAngle = Degrees.of(-10);
 
-        public static final double kEncoderToPivotRatio = (45d/25d);
-        public static final double kRotorToPivotRatio = (9d/1d) * (42d/32d) * (60d / 12d);
-
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                .withKP(86.811)
+                .withKP(19.101)
                 .withKI(0)
-                .withKD(3)
-                .withKS(0.57337)
-                .withKV(5.3927)
-                .withKA(0.59129)
-                .withKG(0.72754)
+                .withKD(2.9346)
+                .withKS(0.38237)
+                .withKV(6.162)
+                .withKA(0.34413)
+                .withKG(0.35147)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(30)
-                .withMotionMagicExpo_kV(5.3927)
-                .withMotionMagicExpo_kA(0.59129))
+                .withMotionMagicCruiseVelocity(0.1)
+                .withMotionMagicExpo_kV(6.75)
+                .withMotionMagicExpo_kA(0.34413))
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(60)
+                .withSupplyCurrentLimit(10)
                 .withStatorCurrentLimit(120))
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Brake))
+                .withNeutralMode(NeutralModeValue.Coast))
             .withFeedback(new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(kEncoderID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
@@ -142,7 +143,9 @@ public class Constants {
         public static final CANcoderConfiguration kEncoderConfigs = new CANcoderConfiguration()
             .withMagnetSensor(new MagnetSensorConfigs()
                 .withMagnetOffset(kEncoderOffset)
-                .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
+                .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                .withAbsoluteSensorDiscontinuityPoint(Degrees.of(0))
+                );
     }
 
     public static class RollerConstants {
