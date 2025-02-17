@@ -25,6 +25,7 @@ import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
 import frc.robot.commands.MoveEndEffector;
+import frc.robot.subsystems.CoralIntake.CoralIntake;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -38,7 +39,9 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Pivot pivot = new Pivot();
   private final Rollers rollers = new Rollers();
-  private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
+  private final CoralIntake coralIntake = new CoralIntake();
+  private final Telemetry telemetry = new Telemetry(DrivetrainConstants.kMaxSpeed.in(MetersPerSecond));
+
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
   .withDeadband(MetersPerSecond.of(0.1))
   .withRotationalDeadband(DegreesPerSecond.of(2))
@@ -56,7 +59,7 @@ public class RobotContainer {
         .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
       )
     );
-    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    //elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
 
     configureBindings();
@@ -114,7 +117,7 @@ public class RobotContainer {
     joystick.rightBumper().and(rollers::hasCoral).onTrue(
       new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
       .raceWith(rollers.setRollerPosition(pivot::pivotAngle))
-      .andThen(Commands.waitUntil(joystick.rightBumper()))
+      .andThen(Commands.waitUntil(()->joystick.getHID().getRightBumperButtonPressed()))
       .andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage))
       .andThen(Commands.waitSeconds(0.5))
       .andThen(rollers.setRollerSpeed(Volts.zero()))

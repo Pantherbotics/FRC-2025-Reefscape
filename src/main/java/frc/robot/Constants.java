@@ -192,6 +192,30 @@ public class Constants {
             .idleMode(IdleMode.kCoast);
     }
 
+    public static class CoralIntakeConstants{
+        public static final int kServoID = 1;
+        public static final double kPositionTolerance = 0.05;
+    }
+
+    public static class ClimberConstants {
+        public static final int kClimberMotorID = 23; // NOT FINAL
+        public static final int kLatchServoID = 1;
+        public static final Angle kUpAngle = Rotations.of(100);
+        public static final TalonFXConfiguration kWinchConfigs = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(60))
+            .withSlot0(new Slot0Configs()
+                .withKP(1)
+                .withKI(0)
+                .withKD(0)
+                .withKS(0)
+                .withKV(0));
+    }
+
+
     public static class RobotStates{
 
         public static class EEState{
