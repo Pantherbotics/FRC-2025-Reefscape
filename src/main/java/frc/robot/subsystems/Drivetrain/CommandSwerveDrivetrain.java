@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -47,7 +49,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /** Swerve request to apply during robot-centric path following */
-    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds() 
+    .withDriveRequestType(DriveRequestType.Velocity)
+    .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -198,11 +202,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void configureAutoBuilder() {
         try {
+            // var config = RobotConfig.fromGUISettings();
             var config = new RobotConfig(
             Pounds.of(90),
-            KilogramSquareMeters.of(100), 
+            KilogramSquareMeters.of(6.883), 
             new ModuleConfig(
-                Inches.of(TunerConstants.FrontRight.WheelRadius), 
+                Meters.of(TunerConstants.FrontRight.WheelRadius), 
                 FeetPerSecond.of(16), // NOT THEORETICAL
                 1.2, 
                 DCMotor.getKrakenX60(1),

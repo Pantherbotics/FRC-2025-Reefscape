@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start to 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 source 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "line up algae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move algae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source 1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -40,7 +40,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -50,6 +52,8 @@ public class Constants {
     public static class DrivetrainConstants{
         public static final PIDConstants kTranslationConstants = new PIDConstants(10, 0);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
+        public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
+        public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
     }
 
     public static class VisionConstants{

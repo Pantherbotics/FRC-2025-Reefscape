@@ -6,6 +6,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import static edu.wpi.first.units.Units.*;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
@@ -35,15 +39,21 @@ public class RobotContainer {
   private final Pivot pivot = new Pivot();
   private final Rollers rollers = new Rollers();
   private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+  .withDeadband(MetersPerSecond.of(0.1))
+  .withRotationalDeadband(DegreesPerSecond.of(2))
+  .withDriveRequestType(DriveRequestType.Velocity)
+  .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
   private final SendableChooser <Command> autoChooser;
 
   public RobotContainer() {
     drivetrain.registerTelemetry(telemetry::telemeterize);
     drivetrain.setDefaultCommand(
-      drivetrain.applyRequest(()->
-      drive.withVelocityX(joystick.getLeftY()).withVelocityY(joystick.getLeftX()).withRotationalRate(-joystick.getRightX()*2)
+      drivetrain.applyRequest(()->drive
+        .withVelocityX(-joystick.getLeftY() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
+        .withVelocityY(-joystick.getLeftX() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
+        .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
       )
     );
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
