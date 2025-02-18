@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -16,6 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,7 +38,7 @@ public class Pivot extends SubsystemBase {
 
   private final VoltageOut m_voltReq = new VoltageOut(0);
   private final SysIdRoutine routine = new SysIdRoutine(
-    new Config(null, Volts.of(3), null, (state)->SignalLogger.writeString("State", state.toString())),
+    new Config( Volts.of(0.75).per(Second), Volts.of(2), null, (state)->SignalLogger.writeString("State", state.toString())),
     new Mechanism(this::setVolts, null, this));
 
   public Pivot() {
@@ -85,10 +87,7 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("pivotAtGoal", isAtGoal());
-    SmartDashboard.putNumber("encoderPosition", m_pivotEncoder.getPosition().getValue().in(Degrees));
-    SmartDashboard.putNumber("motorPosition", m_pivotMotor.getPosition().getValue().in(Degrees));
     SmartDashboard.putNumber("pivot angle", pivotAngle().in(Degrees));
-    SmartDashboard.putNumber("reference angle", Units.rotationsToDegrees(m_pivotMotor.getClosedLoopReference().getValueAsDouble()));
-    SmartDashboard.putNumber("error", Units.rotationsToDegrees(m_pivotMotor.getClosedLoopError().getValueAsDouble()));
+    SmartDashboard.putNumber("pivot goal", goalAngle.in(Degrees));
   }
 }

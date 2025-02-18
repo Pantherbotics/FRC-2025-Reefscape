@@ -22,8 +22,9 @@ public class CoralIntake extends SubsystemBase {
 
   private double goal = 0.0;
   public CoralIntake() {
-    m_pivotServo.setBoundsMicroseconds(2000, 1500, 1500, 1500, 1000);
+    m_pivotServo.setBoundsMicroseconds(1950, 1504, 1500, 1496, 1050);
     m_RollersMotor.getConfigurator().apply(CoralIntakeConstants.kMotorConfig);
+    // m_pivotServo.setZeroLatch();
   }
 
   public Command setServoPosition(double position) {
@@ -31,6 +32,14 @@ public class CoralIntake extends SubsystemBase {
       goal = MathUtil.clamp(position, 0.0, 1.0);
       m_pivotServo.set(goal);
     });
+  }
+
+  public Command setSpeed(double speed){
+    return this.runOnce(()->m_pivotServo.setSpeed(speed));
+  }
+
+  public Command setPulseWidth(int width){
+    return this.runOnce(()-> m_pivotServo.setPulseTimeMicroseconds(width));
   }
 
   public Command setServoHigh() {

@@ -81,7 +81,7 @@ public class Constants {
         public static final Distance kGoalTolerance = Inches.of(0.1);
         public static final Per<DistanceUnit, AngleUnit> kConversion = kSprocketCircumference.div(Rotations.of(1/kElevatorRatio));
         
-        public static final Voltage kZeroVoltage = Volts.of(-0.5);
+        public static final Voltage kZeroVoltage = Volts.of(-1);
 
         public static final TalonFXConfiguration kElevatorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs() // voltage
@@ -135,18 +135,18 @@ public class Constants {
 
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
-                .withKP(19.101)
+                .withKP(200)
                 .withKI(0)
-                .withKD(2.9346)
-                .withKS(0.38237)
-                .withKV(6.162)
-                .withKA(0.34413)
-                .withKG(0.35147)
+                .withKD(1)
+                .withKS(0.3212890625)
+                .withKV(6.5)
+                .withKA(0.17027)
+                .withKG(0)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(0.1)
-                .withMotionMagicExpo_kV(6.75)
-                .withMotionMagicExpo_kA(0.34413))
+                .withMotionMagicCruiseVelocity(100)
+                .withMotionMagicExpo_kV(6.5)
+                .withMotionMagicExpo_kA(0.17027))
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(40)
                 .withSupplyCurrentLimit(120)
@@ -174,7 +174,7 @@ public class Constants {
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
-        public static final Voltage kIntakeVoltage = Volts.of(4);
+        public static final Voltage kIntakeVoltage = Volts.of(3);
         public static final Voltage kSeatVoltage = Volts.of(1);
         public static final Voltage kBackVoltage = Volts.of(-0.5);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
@@ -261,10 +261,10 @@ public class Constants {
             EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
             EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-16.5)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
-            EEStates.put("coral station", new EEState(Inches.of(7.75), Degrees.of(-28)));
+            EEStates.put("coral station", new EEState(Inches.of(3), Degrees.of(-24)));
             EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));
             EEStates.put("Algae 2", new EEState(Inches.of(31), Degrees.of(-25.5)));
-            EEStates.put("Stow", new EEState(Inches.of(0), Degrees.of(35)));
+            EEStates.put("Stow", new EEState(Inches.of(0), Degrees.of(10)));
         }
 
     }
