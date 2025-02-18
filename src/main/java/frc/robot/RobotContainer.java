@@ -20,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
 import frc.robot.commands.MoveEndEffector;
+import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.CoralIntake.CoralIntake;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -41,6 +43,7 @@ public class RobotContainer {
   private final Rollers rollers = new Rollers();
   private final CoralIntake coralIntake = new CoralIntake();
   private final Telemetry telemetry = new Telemetry(DrivetrainConstants.kMaxSpeed.in(MetersPerSecond));
+  private final Climber climber = new Climber();
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
   .withDeadband(MetersPerSecond.of(0.1))
@@ -61,6 +64,7 @@ public class RobotContainer {
     );
     //elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
+    coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()));
 
     configureBindings();
 
@@ -105,29 +109,53 @@ public class RobotContainer {
     //joystick.povLeft().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")));
     //joystick.povLeft().onTrue(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")));
 
-    joystick.leftBumper().onTrue(
-      new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station"))
-      .alongWith(rollers.setRollerSpeed(RollerConstants.kIntakeVoltage))
-      .until(rollers::hasCoral)
-      .andThen(Commands.waitSeconds(0.1))
-      .andThen(rollers.seatCoral())
-      .withName("Intake")
-    );
+    // joystick.leftBumper().onTrue(
+    //   new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station"))
+    //   .alongWith(rollers.setRollerSpeed(RollerConstants.kIntakeVoltage))
+    //   .until(rollers::hasCoral)
+    //   .andThen(Commands.waitSeconds(0.1))
+    //   .andThen(rollers.seatCoral())
+    //   .withName("Intake")
+    // );
 
-    joystick.rightBumper().and(rollers::hasCoral).onTrue(
-      new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
-      .raceWith(rollers.setRollerPosition(pivot::pivotAngle))
-      .andThen(Commands.waitUntil(()->joystick.getHID().getRightBumperButtonPressed()))
-      .andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage))
-      .andThen(Commands.waitSeconds(0.5))
-      .andThen(rollers.setRollerSpeed(Volts.zero()))
-    );
+    // joystick.rightBumper().and(rollers::hasCoral).onTrue(
+    //   new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
+    //   .raceWith(rollers.setRollerPosition(pivot::pivotAngle))
+    //   .andThen(Commands.waitUntil(()->joystick.getHID().getRightBumperButtonPressed()))
+    //   .andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage))
+    //   .andThen(Commands.waitSeconds(0.5))
+    //   .andThen(rollers.setRollerSpeed(Volts.zero()))
+    // );
 
-    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
+    // joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
 
     // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
     // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
     // joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
+
+    // joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(30)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(-30)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+
+    // joystick.b().toggleOnTrue(
+    //   Commands.race(
+    //     pivot.setAngleCommand(Degrees.of(-25)).repeatedly(),
+    //     rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral)
+    //       .andThen(rollers.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!rollers.hasCoral()))
+    //       .andThen(rollers.setRollerSpeed(RollerConstants.kBackVoltage).until(rollers::hasCoral))
+    //       .andThen(rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))),
+    //     coralIntake.setRollersVoltage(Volts.of(5)).andThen(coralIntake.setServoPosition(0.99)).repeatedly()
+    //   )
+    // );
+    
+    // joystick.rightBumper().toggleOnTrue(coralIntake.setRollersVoltage(Volts.of(5)));
+    // joystick.povLeft().onTrue(coralIntake.setServoPosition(0));
+    // joystick.povRight().onTrue(coralIntake.setServoPosition(0.99));
+
+    // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
+
+    // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
+
     // joystick.povDown().onTrue(elevator.zeroEncoder());
 
   }

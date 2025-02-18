@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CommutationConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -17,9 +18,12 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.signals.AdvancedHallSupportValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.PIDConstants;
@@ -144,11 +148,12 @@ public class Constants {
                 .withMotionMagicExpo_kV(6.75)
                 .withMotionMagicExpo_kA(0.34413))
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(10)
-                .withStatorCurrentLimit(120))
+                .withStatorCurrentLimit(40)
+                .withSupplyCurrentLimit(120)
+                )
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Coast))
+                .withNeutralMode(NeutralModeValue.Brake))
             .withFeedback(new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(kEncoderID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
@@ -165,42 +170,51 @@ public class Constants {
 
     public static class RollerConstants {
         public static final int kLaserCANID = 20;
-        public static final int kRollersMotorID = 1;
+        public static final int kRollersMotorID = 2;
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
-        public static final double kMotorToWheelRatio = (24d/50d) * (15d/45d);
+        public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
+        public static final double kDebounceTime = 0.05;
         public static final Voltage kIntakeVoltage = Volts.of(4);
-        public static final Voltage kSeatVoltage = Volts.of(1.5);
+        public static final Voltage kSeatVoltage = Volts.of(1);
         public static final Voltage kBackVoltage = Volts.of(-0.5);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
-        
-        public static final MAXMotionConfig kMotionConfig = new MAXMotionConfig()
-            .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-            .allowedClosedLoopError(0.2)
-            .maxAcceleration(2)
-            .maxVelocity(10);
+
 
         public static final SparkBaseConfig kMotorConfig = new SparkFlexConfig()
             .apply(new ClosedLoopConfig()
-                .apply(kMotionConfig)
                 .pidf(
-                    1, 
+                    2, 
                     0, 
                     0, 
-                    1)
+                    0.5)
                 )
             .smartCurrentLimit(50)
-            .idleMode(IdleMode.kCoast);
+            .idleMode(IdleMode.kBrake);
     }
 
     public static class CoralIntakeConstants{
-        public static final int kServoID = 1;
+        public static final int kServoID = 0;
+        public static final int kRollersMotorID = 25;
         public static final double kPositionTolerance = 0.05;
+        public static final TalonFXSConfiguration kMotorConfig = new TalonFXSConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(40)
+                .withSupplyCurrentLimit(80)
+            )
+            .withCommutation(new CommutationConfigs()
+                .withAdvancedHallSupport(AdvancedHallSupportValue.Enabled)
+                .withMotorArrangement(MotorArrangementValue.Minion_JST)
+            )
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+            );
+            
     }
 
     public static class ClimberConstants {
-        public static final int kClimberMotorID = 23; // NOT FINAL
-        public static final int kLatchServoID = 1;
-        public static final Angle kUpAngle = Rotations.of(100);
+        public static final int kClimberMotorID = 26; // NOT FINAL
+        public static final int kLatchServoID = 9;
+        public static final Angle kUpAngle = Rotations.of(-170.437012);
         public static final TalonFXConfiguration kWinchConfigs = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)

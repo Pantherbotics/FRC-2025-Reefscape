@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -86,6 +87,8 @@ public class Pivot extends SubsystemBase {
     SmartDashboard.putBoolean("pivotAtGoal", isAtGoal());
     SmartDashboard.putNumber("encoderPosition", m_pivotEncoder.getPosition().getValue().in(Degrees));
     SmartDashboard.putNumber("motorPosition", m_pivotMotor.getPosition().getValue().in(Degrees));
-    SmartDashboard.putNumber("angle", pivotAngle().in(Degrees));
+    SmartDashboard.putNumber("pivot angle", pivotAngle().in(Degrees));
+    SmartDashboard.putNumber("reference angle", Units.rotationsToDegrees(m_pivotMotor.getClosedLoopReference().getValueAsDouble()));
+    SmartDashboard.putNumber("error", Units.rotationsToDegrees(m_pivotMotor.getClosedLoopError().getValueAsDouble()));
   }
 }
