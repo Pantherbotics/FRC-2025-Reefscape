@@ -137,7 +137,7 @@ public class RobotContainer {
 
     joystick.rightBumper().and(rollers::hasCoral).onTrue(
       Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2"))
           .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
         Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
         Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
@@ -155,12 +155,13 @@ public class RobotContainer {
     // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
     // joystick.x().onTrue(drivetrain.applyRequest(() -> new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(joystick.getLeftX(), joystick.getLeftY()))));
 
-    joystick.y().onTrue(
-      Commands.parallel(
-        climber.setWinchPosition(ClimberConstants.kUpAngle),
-        climber.setServoLocked(true)
-      )
-    );
+    // joystick.y().onTrue(
+    //   Commands.parallel(
+    //     climber.setWinchPosition(ClimberConstants.kUpAngle),
+    //     climber.setServoLocked(true)
+    //   )
+    // );
+    // the thing above does not work as it requires the same subsystem, how to fix? -eric
 
     joystick.a().onTrue(climber.setWinchPosition(Degrees.zero()));
 
