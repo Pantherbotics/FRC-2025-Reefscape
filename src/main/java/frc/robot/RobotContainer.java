@@ -63,7 +63,8 @@ public class RobotContainer {
         .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
       )
     );
-    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    // elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
     coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()));
 
@@ -135,7 +136,7 @@ public class RobotContainer {
       )
     );
 
-    joystick.rightBumper().and(rollers::hasCoral).onTrue(
+    joystick.rightBumper().onTrue(
       Commands.sequence(
         // new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
         //   .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
@@ -177,10 +178,6 @@ public class RobotContainer {
     // joystick.rightBumper().toggleOnTrue(coralIntake.setRollersVoltage(Volts.of(5)));
   
     // joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
-
-    joystick.back().toggleOnTrue(
-      rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
-    );
 
     //
     // joystick.povUp().onTrue(drivetrain.applyRequest(()->new SwerveRequest.RobotCentric().withVelocityX(1))); 
