@@ -137,7 +137,7 @@ public class RobotContainer {
 
     joystick.rightBumper().and(rollers::hasCoral).onTrue(
       Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
           .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
         Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
         Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
@@ -151,12 +151,18 @@ public class RobotContainer {
     joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
     //
     joystick.povUp().onTrue(drivetrain.applyRequest(()->new SwerveRequest.RobotCentric().withVelocityX(1))); 
-    
+    // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
+    // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
     // joystick.x().onTrue(drivetrain.applyRequest(() -> new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(joystick.getLeftX(), joystick.getLeftY()))));
 
-    // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
+    joystick.y().onTrue(
+      Commands.parallel(
+        climber.setWinchPosition(ClimberConstants.kUpAngle),
+        climber.setServoLocked(true)
+      )
+    );
 
-    // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
+    joystick.a().onTrue(climber.setWinchPosition(Degrees.zero()));
 
     joystick.povDown().onTrue(elevator.zeroEncoder());
 
