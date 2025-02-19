@@ -176,7 +176,12 @@ public class RobotContainer {
 
     // joystick.rightBumper().toggleOnTrue(coralIntake.setRollersVoltage(Volts.of(5)));
   
-    joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
+    // joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
+
+    joystick.back().toggleOnTrue(
+      rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
+    );
+
     //
     // joystick.povUp().onTrue(drivetrain.applyRequest(()->new SwerveRequest.RobotCentric().withVelocityX(1))); 
     // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
