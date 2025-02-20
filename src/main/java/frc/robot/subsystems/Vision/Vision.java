@@ -23,8 +23,8 @@ import frc.robot.Constants.VisionConstants;
 public class Vision {
     private static final PhotonCamera m_leftCamera = new PhotonCamera(VisionConstants.kLeftCamName);
     private static final PhotonCamera m_rightCamera = new PhotonCamera(VisionConstants.kRightCamName);
-    private static final PhotonPoseEstimator m_leftEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToLeftCamTransform);
-    private static final PhotonPoseEstimator m_rightEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCamTransform);
+    private static final PhotonPoseEstimator m_leftEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kRobotToLeftCamTransform);
+    private static final PhotonPoseEstimator m_rightEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kRobotToRightCamTransform);
     public static PhotonPipelineResult m_leftResult;
     public static PhotonPipelineResult m_rightResult;
     public static Optional<EstimatedRobotPose> leftEstimatedPose;
@@ -48,7 +48,7 @@ public class Vision {
         rightEstimatedPose = m_rightEstimator.update(m_rightResult);
 
         leftEstimatedPose.ifPresent(
-            (pose) -> estimatedPoses[0] = pose.estimatedPose);
+            (pose) ->{ estimatedPoses[0] = pose.estimatedPose; System.out.println("POSE! yippe");});
         rightEstimatedPose.ifPresent(
             (pose) -> estimatedPoses[1] = pose.estimatedPose);
 

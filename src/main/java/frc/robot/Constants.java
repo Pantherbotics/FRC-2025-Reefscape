@@ -176,7 +176,7 @@ public class Constants {
         public static final double kDebounceTime = 0.05;
         public static final Voltage kIntakeVoltage = Volts.of(3);
         public static final Voltage kSeatVoltage = Volts.of(1);
-        public static final Voltage kBackVoltage = Volts.of(-0.5);
+        public static final Voltage kBackVoltage = Volts.of(-0.75);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
 
 

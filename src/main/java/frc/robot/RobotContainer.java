@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -52,6 +53,8 @@ public class RobotContainer {
   .withDriveRequestType(DriveRequestType.Velocity)
   .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
+  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt().withDriveRequestType(DriveRequestType.Velocity).withSteerRequestType(SteerRequestType.MotionMagicExpo);
+
   private final SendableChooser <Command> autoChooser;
 
   public RobotContainer() {
@@ -63,8 +66,8 @@ public class RobotContainer {
         .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
       )
     );
-    // elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
-    elevator.setDefaultCommand(Commands.idle(elevator));
+    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
     coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()));
 
@@ -90,11 +93,12 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kReverse));
 
     // drivetrain
-    // joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    // joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    // joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-    
+    joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+
     // pivot
     // joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
     // joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
@@ -113,17 +117,7 @@ public class RobotContainer {
 
 
 
-    
-
-    // joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
-
-    // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(30)));
-    // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)));
-    // joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(-30)));
-
-    // joystick.a().onTrue(pivot.setAngleCommand(Degrees.of(30)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
-    // joystick.x().onTrue(pivot.setAngleCommand(Degrees.of(-30)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
-    // joystick.y().onTrue(pivot.setAngleCommand(Degrees.of(0)).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
 
     joystick.leftBumper().toggleOnTrue(
       Commands.race(
@@ -132,58 +126,42 @@ public class RobotContainer {
           .andThen(rollers.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!rollers.hasCoral()))
           .andThen(rollers.setRollerSpeed(RollerConstants.kBackVoltage).until(rollers::hasCoral))
           .andThen(rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))),
-        coralIntake.setRollersVoltage(Volts.of(4)).andThen(coralIntake.setSpeed(0.5)).repeatedly()
+        coralIntake.setRollersVoltage(Volts.of(3.5)).repeatedly()
       )
     );
 
     joystick.rightBumper().onTrue(
       Commands.sequence(
-        // new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
-        //   .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
-        // Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
-        // Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
+          .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
+        Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
+        Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
+        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
+        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+      )
+    );
+    joystick.start().onTrue(
+      Commands.sequence(
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2"))
+          .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
+        Commands.waitUntil(()->!joystick.getHID().getStartButton()),
+        Commands.waitUntil(()->joystick.getHID().getStartButton()),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
         rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
       )
     );
 
-    joystick.a().onTrue(
-      Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")),
-        rollers.setRollerPosition(pivot::pivotAngle)
-      )
-    );
+    // joystick.a().onTrue(
+    //   Commands.sequence(
+    //     new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")),
+    //     rollers.setRollerPosition(pivot::pivotAngle)
+    //   )
+    // );
 
-    joystick.b().onTrue(
-      Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")),
-        rollers.setRollerPosition(pivot::pivotAngle)
-      )
-    );
+    joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
 
-    joystick.y().onTrue(
-      Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")),
-        rollers.setRollerPosition(pivot::pivotAngle)
-      )
-    );
-
-    joystick.x().onTrue(
-      Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
-        rollers.setRollerPosition(pivot::pivotAngle)
-      )
-    );
-
-    // joystick.rightBumper().toggleOnTrue(coralIntake.setRollersVoltage(Volts.of(5)));
-  
-    // joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
-
-    //
-    // joystick.povUp().onTrue(drivetrain.applyRequest(()->new SwerveRequest.RobotCentric().withVelocityX(1))); 
     // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
     // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
-    // joystick.x().onTrue(drivetrain.applyRequest(() -> new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(joystick.getLeftX(), joystick.getLeftY()))));
 
     // joystick.y().onTrue(
     //   Commands.parallel(
