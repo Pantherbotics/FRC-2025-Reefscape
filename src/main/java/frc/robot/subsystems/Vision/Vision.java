@@ -46,11 +46,10 @@ public class Vision {
         leftEstimatedPose = m_leftEstimator.update(m_leftResult);
         m_rightResult = m_rightCamera.getLatestResult();
         rightEstimatedPose = m_rightEstimator.update(m_rightResult);
-
         leftEstimatedPose.ifPresent(
-            (pose) ->{ estimatedPoses[0] = pose.estimatedPose; System.out.println("POSE! yippe");});
+            (pose) -> estimatedPoses[0] = pose.estimatedPose);
         rightEstimatedPose.ifPresent(
-            (pose) -> estimatedPoses[1] = pose.estimatedPose);
+            (pose) ->estimatedPoses[1] = pose.estimatedPose);
 
         pub.set(estimatedPoses);
 

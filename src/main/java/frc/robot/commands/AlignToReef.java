@@ -11,7 +11,9 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
@@ -71,7 +73,7 @@ public class AlignToReef extends Command {
   public void execute() {
     goal.pose = goalPose;
     var speeds = cont.calculateRobotRelativeSpeeds(drivetrain.getState().Pose, goal);
-    
+    speeds = new ChassisSpeeds(MathUtil.applyDeadband(speeds.vxMetersPerSecond, 0.15), MathUtil.applyDeadband(speeds.vyMetersPerSecond, 0.15), MathUtil.applyDeadband(speeds.omegaRadiansPerSecond, 0.1));
     // ChassisSpeeds speeds = new ChassisSpeeds(
     //   xController.calculate(drivetrain.getState().Pose.getX()),
     //   yController.calculate(drivetrain.getState().Speeds.vyMetersPerSecond),

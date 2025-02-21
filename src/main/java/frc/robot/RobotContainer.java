@@ -69,7 +69,7 @@ public class RobotContainer {
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
-    coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()));
+    coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()).raceWith(Commands.waitSeconds(0.1)).andThen(coralIntake.disableServo()));
 
     configureBindings();
 
@@ -93,10 +93,10 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kReverse));
 
     // drivetrain
-    joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    // joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    // joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    // joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
 
     // pivot
@@ -117,7 +117,7 @@ public class RobotContainer {
 
 
 
-    joystick.a().onTrue(new AlignToReef(drivetrain, false, 1, false));
+    joystick.a().toggleOnTrue(new AlignToReef(drivetrain, false, 1, false));
 
     joystick.leftBumper().toggleOnTrue(
       Commands.race(
@@ -126,7 +126,7 @@ public class RobotContainer {
           .andThen(rollers.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!rollers.hasCoral()))
           .andThen(rollers.setRollerSpeed(RollerConstants.kBackVoltage).until(rollers::hasCoral))
           .andThen(rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))),
-        coralIntake.setRollersVoltage(Volts.of(3.5)).repeatedly()
+        coralIntake.setRollersVoltage(Volts.of(3.5)).andThen(coralIntake.setServoPosition(0.5)).repeatedly()
       )
     );
 
@@ -160,8 +160,8 @@ public class RobotContainer {
 
     joystick.back().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
 
-    // joystick.povUp().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle));
-    // joystick.povDown().onTrue(climber.setWinchPosition(Degrees.zero()));
+    joystick.povLeft().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setServoPosition(0.1)));
+    joystick.povRight().onTrue(climber.setWinchPosition(Degrees.zero()));
 
     // joystick.y().onTrue(
     //   Commands.parallel(

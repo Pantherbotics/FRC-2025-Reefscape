@@ -34,6 +34,10 @@ public class CoralIntake extends SubsystemBase {
     });
   }
 
+  public Command disableServo(){
+    return this.runOnce(()->m_pivotServo.setDisabled());
+  }
+
   public Command setSpeed(double speed){
     return this.runOnce(()->m_pivotServo.setSpeed(speed));
   }
