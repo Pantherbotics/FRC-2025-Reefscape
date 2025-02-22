@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
       m_robotContainer.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(leftPose.timestampSeconds));
     }
     if (Vision.rightEstimatedPose.isPresent()){
-      var rightPose = Vision.leftEstimatedPose.get();
+      var rightPose = Vision.rightEstimatedPose.get();
       m_robotContainer.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(rightPose.timestampSeconds));
     }
 

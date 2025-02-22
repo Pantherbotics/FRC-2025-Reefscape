@@ -22,7 +22,7 @@ public class CoralIntake extends SubsystemBase {
 
   private double goal = 0.0;
   public CoralIntake() {
-    m_pivotServo.setBoundsMicroseconds(1950, 1504, 1500, 1496, 1050);
+    m_pivotServo.setBoundsMicroseconds(1950, 1750, 1500, 1250, 1050);
     m_RollersMotor.getConfigurator().apply(CoralIntakeConstants.kMotorConfig);
     // m_pivotServo.setZeroLatch();
   }

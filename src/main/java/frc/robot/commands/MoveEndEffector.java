@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RobotStates.EEState;
 import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.Pivot.Pivot;
+import frc.robot.subsystems.EndEffector.Pivot;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:

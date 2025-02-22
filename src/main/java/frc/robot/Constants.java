@@ -4,10 +4,16 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CommutationConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -28,11 +34,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -54,7 +58,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDConstants kTranslationConstants = new PIDConstants(5, 0.3);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(4.7, 0.6);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
@@ -66,8 +70,8 @@ public class Constants {
 
         public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-        public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(10)));
-        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(-6), Units.inchesToMeters(9), new Rotation3d(0, -Units.degreesToRadians(23), Units.degreesToRadians(-10)));
+        public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
+        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
         public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-6), Rotation2d.fromDegrees(-180));
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(6
         ), Rotation2d.fromDegrees(-180));
@@ -212,6 +216,58 @@ public class Constants {
             
     }
 
+    public static class AlgaePivotConstants {
+        public static final double kPivotRatio = (25d/1d) * (50d/24d) * (48d/12d);
+        public static final int kMotorID = 27;
+
+        public static final Angle kMinAngle = Degrees.of(-10);
+        public static final Angle kMaxAngle = Degrees.of(95);
+
+        public static final Angle kUpAngle = Degrees.of(90);
+        public static final Angle kDownAngle = Degrees.of(20);
+        public static final Angle kPositionTolerance = Degrees.of(2);
+
+        public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(60)
+                .withSupplyCurrentLimit(90))
+            .withSlot0(new Slot0Configs()
+                .withKP(34.84)
+                .withKI(0)
+                .withKD(0.68478)
+                .withKS(0.09625)
+                .withKV(25.171)
+                .withKA(0.2368)
+                .withKG(0.05385)
+                .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withMotionMagic(new MotionMagicConfigs()
+                .withMotionMagicCruiseVelocity(0.5)
+                .withMotionMagicExpo_kV(25.171)
+                .withMotionMagicExpo_kA(0.2368))
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive))
+            .withFeedback(new FeedbackConfigs()
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                .withSensorToMechanismRatio(kPivotRatio));
+    }
+
+    public static class AlgaeRollerConstants{
+        public static final Voltage kIntakeVoltage = Volts.of(-3);
+        public static final Voltage kOuttakeVoltage = Volts.of(3);
+        public static final int kMotorID = 28;
+        public static final TalonFXSConfiguration kRollerMotorConfigs = new TalonFXSConfiguration()
+        .withCurrentLimits(new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(30)
+            .withSupplyCurrentLimit(80))
+        .withCommutation(new CommutationConfigs()
+            .withMotorArrangement(MotorArrangementValue.Minion_JST)
+            .withAdvancedHallSupport(AdvancedHallSupportValue.Enabled))
+        .withMotorOutput(new MotorOutputConfigs()
+            .withInverted(InvertedValue.CounterClockwise_Positive)
+            .withNeutralMode(NeutralModeValue.Coast));
+    }
+
     public static class ClimberConstants {
         public static final int kClimberMotorID = 26; // NOT FINAL
         public static final int kLatchServoID = 9;
@@ -229,6 +285,8 @@ public class Constants {
                 .withKS(0)
                 .withKV(0));
     }
+
+
 
 
     public static class RobotStates{
