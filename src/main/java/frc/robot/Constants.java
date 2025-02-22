@@ -58,7 +58,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDConstants kTranslationConstants = new PIDConstants(4.7, 0.6);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(7, 0.6);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
@@ -72,9 +72,8 @@ public class Constants {
 
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
-        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-6), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(6
-        ), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
     };
 
     public static class ElevatorConstants{

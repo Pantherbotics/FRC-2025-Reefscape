@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import static edu.wpi.first.units.Units.*;
@@ -22,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AlgaePivotConstants;
 import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
@@ -55,13 +51,10 @@ public class RobotContainer {
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-  .withDeadband(MetersPerSecond.of(0.18
-  ))
+  .withDeadband(MetersPerSecond.of(0.18))
   .withRotationalDeadband(DegreesPerSecond.of(5))
   .withDriveRequestType(DriveRequestType.Velocity)
   .withSteerRequestType(SteerRequestType.MotionMagicExpo);
-
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt().withDriveRequestType(DriveRequestType.Velocity).withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
   private final SendableChooser <Command> autoChooser;
 
@@ -79,7 +72,7 @@ public class RobotContainer {
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
     coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()).raceWith(Commands.waitSeconds(0.1)).andThen(coralIntake.disableServo()));
     algaeRoller.setDefaultCommand(algaeRoller.setVoltage(Volts.of(0)));
-    algaePivot.setDefaultCommand(algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle));
+    algaePivot.setDefaultCommand(algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle).repeatedly());
 
     configureBindings();
 
@@ -125,16 +118,29 @@ public class RobotContainer {
     // joystick.x().onTrue(algaePivot.setAngleCommand(Degrees.of(50)));
     // joystick.y().onTrue(algaePivot.setAngleCommand(Degrees.of(90)));
 
-    joystick.leftBumper().or(joystick.rightBumper()).and(rollers::hasCoral).onTrue(
+    joystick.leftBumper().and(rollers::hasCoral).onTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
           .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
-        Commands.waitUntil(()->!joystick.getHID().getRightBumperButton() & !joystick.getHID().getLeftBumperButton()),
-        Commands.waitUntil(()->joystick.getHID().getRightBumperButton() || joystick.getHID().getLeftBumperButton()),
+        Commands.waitUntil(()->!joystick.getHID().getLeftBumperButton()),
+        Commands.waitUntil(()->joystick.getHID().getLeftBumperButton()),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
         rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
       )
     );
+    joystick.rightBumper().and(rollers::hasCoral).onTrue(
+      Commands.sequence(
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
+          .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
+        Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
+        Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
+        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
+        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+      )
+    );
+
+    joystick.rightBumper().and(rollers::hasCoral).debounce(0.1, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, false));
+    joystick.leftBumper().and(rollers::hasCoral).debounce(0.1, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true));
 
     joystick.leftBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
@@ -148,10 +154,7 @@ public class RobotContainer {
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
       )
     );
-    
 
-    joystick.rightBumper().and(rollers::hasCoral).debounce(0.33, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, false, 1, false));
-    joystick.leftBumper().and(rollers::hasCoral).debounce(0.33, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true, 1, false));
 
     joystick.start().onTrue(
       Commands.sequence(
@@ -175,12 +178,12 @@ public class RobotContainer {
       )
     );
 
-    joystick.a().onTrue(
-      Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1")),
-        rollers.setRollerPosition(pivot::pivotAngle)
-      )
-    );
+    // joystick.a().onTrue(
+    //   Commands.sequence(
+    //     new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
+    //     .raceWith(rollers.setRollerPosition(pivot::pivotAngle))
+    //   )
+    // );
 
     joystick.leftTrigger().toggleOnTrue(
       algaePivot.setAngleCommand(AlgaePivotConstants.kDownAngle)

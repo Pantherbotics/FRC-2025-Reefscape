@@ -20,6 +20,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Utils;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -52,7 +53,7 @@ public class Rollers extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return m_debouncer.calculate(laserCANReading());
+    return Utils.isSimulation()?true:m_debouncer.calculate(laserCANReading());
   }
 
   public Command setRollerSpeed(Voltage voltage) {

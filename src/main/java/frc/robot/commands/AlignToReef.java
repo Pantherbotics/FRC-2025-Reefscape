@@ -5,20 +5,19 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
@@ -27,12 +26,10 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 public class AlignToReef extends Command {
   private CommandSwerveDrivetrain drivetrain;
   private boolean isLeftSide;
-  private int reefSide;
-  private boolean mirrorPose;
   private Pose2d goalPose;
   private boolean end = false;
-  private final Alert unknownSide = new Alert("Unknown reef side!", AlertType.kError);
   private final int kRedIDoffset = 5;
+  private final int kBlueIDoffset = 16;
 
   // private PIDController xController = DrivetrainConstants.kXController;
   // private PIDController yController = DrivetrainConstants.kYController;
@@ -43,37 +40,47 @@ public class AlignToReef extends Command {
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private StructTopic<Pose2d> topic = inst.getStructTopic("GoalPose", Pose2d.struct);
   private StructPublisher<Pose2d> pub = topic.publish();
+  private final double kMaxTranslationSpeed = 4;
+  private final double kTranslationDeadband = 0.05;
+  private final double kMaxRotationSpeed = 1.5 * Math.PI;
+  private final double kRotationDeadband = 0.2;
 
   /**
    * Auto alignment for reef scoring
    * @param drivetrain the drivetrain subsystem
    * @param isLeftSide True if the robot should align to the left reef branch
    * @param reefSide which side of the reef the robot should align to, from 1-6. ID's start with the bottom right side and increase counterclockwise.
-   * @param mirrorPose True if the pose should be mirrored for the Blue alliance.
+   * @param isRedAlliance True if the pose should be mirrored for the Blue alliance.
    */
-  public AlignToReef(CommandSwerveDrivetrain drivetrain, boolean isLeftSide, int reefSide, boolean mirrorPose) {
+  public AlignToReef(CommandSwerveDrivetrain drivetrain, boolean isLeftSide) {
     this.drivetrain = drivetrain;
     this.isLeftSide = isLeftSide;
-    this.reefSide = reefSide;
-    this.mirrorPose = mirrorPose;
     addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() {
-    unknownSide.set(false);
-    VisionConstants.kAprilTagLayout.getTagPose(reefSide + kRedIDoffset).ifPresentOrElse(
-      (pose) -> goalPose = pose.toPose2d().plus( isLeftSide? VisionConstants.kLeftTransform : VisionConstants.kRightTransform),
-      ()->{end = true; unknownSide.set(true);});
-
+    goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(isLeftSide?VisionConstants.kLeftTransform:VisionConstants.kRightTransform);
     pub.set(goalPose);
+  }
+
+  private Pose2d getClosestTagPose(Pose2d robotPose){
+    var tags =VisionConstants.kAprilTagLayout.getTags();
+    List<Pose2d> tagPoses = tags.stream()
+                .filter(tag -> (tag.ID > kRedIDoffset && tag.ID <= kRedIDoffset+6) || (tag.ID > kBlueIDoffset && tag.ID <= kBlueIDoffset+6))
+                .map(tag -> tag.pose.toPose2d())
+                .collect(Collectors.toList());
+
+    return robotPose.nearest(tagPoses);
   }
 
   @Override
   public void execute() {
     goal.pose = goalPose;
     var speeds = cont.calculateRobotRelativeSpeeds(drivetrain.getState().Pose, goal);
-    speeds = new ChassisSpeeds(MathUtil.applyDeadband(speeds.vxMetersPerSecond, 0.12), MathUtil.applyDeadband(speeds.vyMetersPerSecond, 0.12), MathUtil.applyDeadband(speeds.omegaRadiansPerSecond, 0.1));
+    speeds.vxMetersPerSecond = MathUtil.clamp(MathUtil.applyDeadband(speeds.vxMetersPerSecond, kTranslationDeadband), -kMaxTranslationSpeed, kMaxTranslationSpeed);
+    speeds.vyMetersPerSecond =  MathUtil.clamp(MathUtil.applyDeadband(speeds.vyMetersPerSecond, kTranslationDeadband), -kMaxTranslationSpeed, kMaxTranslationSpeed);
+    speeds.omegaRadiansPerSecond = MathUtil.clamp(MathUtil.applyDeadband(speeds.omegaRadiansPerSecond, kRotationDeadband), -kMaxRotationSpeed, kMaxRotationSpeed);
     // ChassisSpeeds speeds = new ChassisSpeeds(
     //   xController.calculate(drivetrain.getState().Pose.getX()),
     //   yController.calculate(drivetrain.getState().Speeds.vyMetersPerSecond),
