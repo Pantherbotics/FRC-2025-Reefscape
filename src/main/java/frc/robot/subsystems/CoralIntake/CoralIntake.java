@@ -25,6 +25,7 @@ public class CoralIntake extends SubsystemBase {
     m_pivotServo.setBoundsMicroseconds(1950, 1750, 1500, 1250, 1050);
     m_RollersMotor.getConfigurator().apply(CoralIntakeConstants.kMotorConfig);
     // m_pivotServo.setZeroLatch();
+    SmartDashboard.putData(this);
   }
 
   public Command setServoPosition(double position) {

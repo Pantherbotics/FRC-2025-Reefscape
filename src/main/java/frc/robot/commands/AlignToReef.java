@@ -26,8 +26,8 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 public class AlignToReef extends Command {
   private CommandSwerveDrivetrain drivetrain;
   private boolean isLeftSide;
+  private boolean endWhenClose;
   private Pose2d goalPose;
-  private boolean end = false;
   private final int kRedIDoffset = 5;
   private final int kBlueIDoffset = 16;
 
@@ -52,9 +52,10 @@ public class AlignToReef extends Command {
    * @param reefSide which side of the reef the robot should align to, from 1-6. ID's start with the bottom right side and increase counterclockwise.
    * @param isRedAlliance True if the pose should be mirrored for the Blue alliance.
    */
-  public AlignToReef(CommandSwerveDrivetrain drivetrain, boolean isLeftSide) {
+  public AlignToReef(CommandSwerveDrivetrain drivetrain, boolean isLeftSide, boolean endWhenClose) {
     this.drivetrain = drivetrain;
     this.isLeftSide = isLeftSide;
+    this.endWhenClose = endWhenClose;
     addRequirements(drivetrain);
   }
 
@@ -93,11 +94,12 @@ public class AlignToReef extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return end;
+    return endWhenClose && drivetrain.getState().Pose.relativeTo(goalPose).getTranslation().getNorm() < VisionConstants.kDistToleranceMeters;
   }
 }

@@ -74,6 +74,8 @@ public class Constants {
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
         public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
+
+        public static final double kDistToleranceMeters = 0.03;
     };
 
     public static class ElevatorConstants{
@@ -231,16 +233,16 @@ public class Constants {
                 .withStatorCurrentLimit(60)
                 .withSupplyCurrentLimit(90))
             .withSlot0(new Slot0Configs()
-                .withKP(34.84)
+                .withKP(800)
                 .withKI(0)
-                .withKD(0.68478)
+                .withKD(0.0)
                 .withKS(0.09625)
                 .withKV(25.171)
                 .withKA(0.2368)
                 .withKG(0.05385)
                 .withGravityType(GravityTypeValue.Arm_Cosine))
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(0.5)
+                .withMotionMagicCruiseVelocity(10)
                 .withMotionMagicExpo_kV(25.171)
                 .withMotionMagicExpo_kA(0.2368))
             .withMotorOutput(new MotorOutputConfigs()
@@ -252,7 +254,7 @@ public class Constants {
     }
 
     public static class AlgaeRollerConstants{
-        public static final Voltage kIntakeVoltage = Volts.of(-3);
+        public static final Voltage kIntakeVoltage = Volts.of(-5);
         public static final Voltage kOuttakeVoltage = Volts.of(3);
         public static final int kMotorID = 28;
         public static final TalonFXSConfiguration kRollerMotorConfigs = new TalonFXSConfiguration()
@@ -264,7 +266,7 @@ public class Constants {
             .withAdvancedHallSupport(AdvancedHallSupportValue.Enabled))
         .withMotorOutput(new MotorOutputConfigs()
             .withInverted(InvertedValue.CounterClockwise_Positive)
-            .withNeutralMode(NeutralModeValue.Coast));
+            .withNeutralMode(NeutralModeValue.Brake));
     }
 
     public static class ClimberConstants {
@@ -322,7 +324,7 @@ public class Constants {
             EEStates.put("coral station", new EEState(Inches.of(3), Degrees.of(-24)));
             EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));
             EEStates.put("Algae 2", new EEState(Inches.of(31), Degrees.of(-25.5)));
-            EEStates.put("Stow", new EEState(Inches.of(0), Degrees.of(10)));
+            EEStates.put("Stow", new EEState(Inches.of(0.125), Degrees.of(10)));
         }
 
     }

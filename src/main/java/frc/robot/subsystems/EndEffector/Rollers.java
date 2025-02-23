@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RollerConstants;
 
@@ -35,9 +36,11 @@ public class Rollers extends SubsystemBase {
   private final SparkClosedLoopController m_controller = m_rollersMotor.getClosedLoopController();
   private final Debouncer m_debouncer = new Debouncer(RollerConstants.kDebounceTime, DebounceType.kBoth);
   private final Alert m_lasercanAlert = new Alert("Lasercan Bad reading", AlertType.kError);
+  private boolean isSeated = false;
 
   public Rollers() {
     m_rollersMotor.configure(RollerConstants.kMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    SmartDashboard.putData(this);
   }
 
   private boolean laserCANReading(){
@@ -57,8 +60,10 @@ public class Rollers extends SubsystemBase {
   }
 
   public Command setRollerSpeed(Voltage voltage) {
-    return this.run(() ->{ m_rollersMotor.setVoltage(voltage); SmartDashboard.putNumber(
-      "roller speed", voltage.in(Volts));});
+    return this.run(() ->{
+      if (voltage.in(Volts) != 0){isSeated = false;}
+      m_rollersMotor.setVoltage(voltage); 
+      SmartDashboard.putNumber("roller speed", voltage.in(Volts));});
   }
 
   public Command setRollerPosition(Supplier<Angle> wheelAngle) {
@@ -68,30 +73,22 @@ public class Rollers extends SubsystemBase {
     );
   }
 
-  // public Command seatCoral(){
-  //   return setRollerSpeed(RollerConstants.kSeatVoltage)
-  //   .until(()->!hasCoral())
+  public Command seatCoral(){
+    return this.setRollerSpeed(RollerConstants.kIntakeVoltage).until(this::hasCoral)
+    .andThen(this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!this.hasCoral()))
+    .andThen(this.setRollerSpeed(RollerConstants.kBackVoltage).until(this::hasCoral))
+    .andThen(this.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+    .alongWith(Commands.runOnce(()->isSeated = true)));
+  }
 
-  //   .andThen(Commands.runOnce(()->SmartDashboard.putString("status debug", "No coral")))
-
-  //   .andThen(Commands.waitSeconds(1))
-
-  //   .andThen(setRollerSpeed(RollerConstants.kBackVoltage))
-
-  //   .until(this::hasCoral)
-
-  //   .andThen(Commands.runOnce(()->SmartDashboard.putString("status debug", "Has coral")))
-    
-  //   .andThen(Commands.waitSeconds(0.5))
-  //   .andThen(setRollerSpeed(Volts.zero()).until(()->true))
-    
-  //   .andThen(Commands.runOnce(()->SmartDashboard.putString("status debug", "Stopped")));
-  // }
+  public boolean isSeated(){
+    return Utils.isSimulation()?true:isSeated;
+  }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("roller pos", Units.rotationsToDegrees(m_rollersMotor.getEncoder().getPosition()));
     SmartDashboard.putBoolean("Has coral?", hasCoral());
-    
+    SmartDashboard.putBoolean("isSeated", isSeated);
   } 
 }

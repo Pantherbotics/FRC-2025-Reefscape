@@ -53,6 +53,7 @@ public class Pivot extends SubsystemBase {
       m_pivotEncoder.getPosition(),
       m_pivotEncoder.getVelocity());
 
+    SmartDashboard.putData(this);
   }
 
   public Command setAngleCommand(Angle angle){

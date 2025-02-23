@@ -40,6 +40,7 @@ public class AlgaePivot extends SubsystemBase {
   public AlgaePivot() {
     m_pivotMotor.getConfigurator().apply(AlgaePivotConstants.kPivotConstants);
     m_pivotMotor.setPosition(Degrees.of(90));
+    SmartDashboard.putData(this);
   }
 
   public Angle getAngle(){
