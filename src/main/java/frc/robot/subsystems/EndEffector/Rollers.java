@@ -8,12 +8,15 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RollerConstants;
 
@@ -65,6 +68,14 @@ public class Rollers extends SubsystemBase {
       m_rollersMotor.setVoltage(voltage); 
       SmartDashboard.putNumber("roller speed", voltage.in(Volts));});
   }
+  
+  public Command stopRollers(){
+    return this.runOnce(()->m_rollersMotor.stopMotor());
+  }
+
+  public Command setSpeedForSeconds(Voltage voltage, Time time){
+    return setRollerSpeed(voltage).raceWith(Commands.waitSeconds(time.in(Seconds)));
+  }
 
   public Command setRollerPosition(Supplier<Angle> wheelAngle) {
     return this.startRun(
@@ -73,11 +84,25 @@ public class Rollers extends SubsystemBase {
     );
   }
 
+  public Command smartOuttake(Voltage outtakeVoltage, Time outtakeSeconds){
+    return
+      this.setSpeedForSeconds(outtakeVoltage, outtakeSeconds)
+      .andThen(
+        new ConditionalCommand(
+          Commands.sequence(
+            this.setRollerSpeed(RollerConstants.kBackVoltage).until(this::hasCoral),
+            this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!hasCoral()),
+            this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true))
+          ), 
+          this.stopRollers(), 
+          ()->m_rollersMotor.getOutputCurrent()>RollerConstants.kMaxCurrent));
+  }
+
   public Command seatCoral(){
     return this.setRollerSpeed(RollerConstants.kIntakeVoltage).until(this::hasCoral)
     .andThen(this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!this.hasCoral()))
     .andThen(this.setRollerSpeed(RollerConstants.kBackVoltage).until(this::hasCoral))
-    .andThen(this.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+    .andThen(this.stopRollers().raceWith(Commands.waitSeconds(0.1))
     .alongWith(Commands.runOnce(()->isSeated = true)));
   }
 
