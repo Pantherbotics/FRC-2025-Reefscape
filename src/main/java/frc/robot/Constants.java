@@ -177,6 +177,7 @@ public class Constants {
     public static class RollerConstants {
         public static final int kLaserCANID = 20;
         public static final int kRollersMotorID = 2;
+        public static final int kMaxCurrent = 10;
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
