@@ -40,10 +40,15 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
@@ -64,6 +69,7 @@ public class Constants {
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
     }
 
+
     public static class VisionConstants{
         public static final String kLeftCamName = "leftCam";
         public static final String kRightCamName = "rightCam";
@@ -76,6 +82,9 @@ public class Constants {
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
 
         public static final double kDistToleranceMeters = 0.03;
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    
     };
 
     public static class ElevatorConstants{

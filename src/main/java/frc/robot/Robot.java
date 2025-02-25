@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,16 +11,18 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.RobotStates;
-import frc.robot.subsystems.Vision.Vision;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  // private Vision vision;
 
   public Robot() {
     CanBridge.runTCP();
-    Vision.setup();
+
+    // vision = new Vision();
+    // Vision.setup();
     RobotStates.setupPositionTable();
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
@@ -30,15 +31,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    Vision.updateCamera();
-    if (Vision.leftEstimatedPose.isPresent()){
-      var leftPose = Vision.leftEstimatedPose.get();
-      m_robotContainer.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(leftPose.timestampSeconds));
-    }
-    if (Vision.rightEstimatedPose.isPresent()){
-      var rightPose = Vision.rightEstimatedPose.get();
-      m_robotContainer.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(rightPose.timestampSeconds));
-    }
+    m_robotContainer.updateVision();
+
+        // Correct pose estimate with vision measurements
+        
+    // Vision.updateCamera();
+    // if (Vision.leftEstimatedPose.isPresent()){
+    //   var leftPose = Vision.leftEstimatedPose.get();
+    //   m_robotContainer.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(leftPose.timestampSeconds), Vision.getCurrentStdDev());
+    // }
+    // if (Vision.rightEstimatedPose.isPresent()){
+    //   var rightPose = Vision.rightEstimatedPose.get();
+    //   m_robotContainer.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(rightPose.timestampSeconds));
+    // } 
 
     CommandScheduler.getInstance().run();
   }
@@ -75,7 +80,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  }
 
   @Override
   public void teleopExit() {}
@@ -90,4 +97,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+   
+  @Override
+  public void simulationPeriodic(){
+    m_robotContainer.updateSimVision();
+  }
+
 }

@@ -11,8 +11,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +40,7 @@ import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.Pivot;
 import frc.robot.subsystems.EndEffector.Rollers;
+import frc.robot.subsystems.Vision.Vision;
 
 public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
@@ -49,6 +53,12 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final AlgaePivot algaePivot = new AlgaePivot();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
+
+  private final Vision vision = new Vision();
+
+
+
+
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
   .withDeadband(MetersPerSecond.of(0.18))
@@ -80,11 +90,10 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", this.autoChooser);
   }
 
-  public void addVisionMeasurement(Pose2d pose, double timestamp){
-    drivetrain.addVisionMeasurement(pose, timestamp);
-  }
+  
+ 
 
-
+  
   private void configureBindings() {
     
     // joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
@@ -249,6 +258,29 @@ public class RobotContainer {
 
     
 
+  }
+
+
+  public void updateVision(){
+
+    var visionEsts = vision.getEstimatedGlobalPoses();
+    for (Optional<EstimatedRobotPose> item: visionEsts){
+      item.ifPresent(
+        est -> {
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = vision.getEstimationStdDevs();
+
+            drivetrain.addVisionMeasurement(
+                    est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+        });
+    }
+        
+
+  }
+
+  public void updateSimVision(){
+    vision.simulationPeriodic(drivetrain.getState().Pose);
+    // var debugField = vision.getSimDebugField();
   }
 
   public Command getAutonomousCommand() {
