@@ -124,12 +124,12 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
     
     // Intake command
-    joystick.back().toggleOnTrue(
+    joystick.leftBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(Commands.idle()),
         rollers.seatCoral(),
         coralIntake.setRollersVoltage(Volts.of(3.2)).andThen(coralIntake.setPulseWidth(1700)).repeatedly()
-      ).withName("Coral station intake")
+      ).withName("Coral station intake").unless(rollers::hasCoral)
     );
 
     // L3 commands

@@ -228,7 +228,7 @@ public class Constants {
     }
 
     public static class AlgaePivotConstants {
-        public static final double kPivotRatio = (25d/1d) * (50d/24d) * (48d/12d);
+        public static final double kPivotRatio = (9d/1d) * (50d/24d) * (48d/12d);
         public static final int kMotorID = 27;
 
         public static final Angle kMinAngle = Degrees.of(-10);
@@ -243,11 +243,11 @@ public class Constants {
                 .withStatorCurrentLimit(60)
                 .withSupplyCurrentLimit(90))
             .withSlot0(new Slot0Configs()
-                .withKP(800)
+                .withKP(10)
                 .withKI(0)
                 .withKD(0.0)
                 .withKS(0.09625)
-                .withKV(25.171)
+                .withKV(10)
                 .withKA(0.2368)
                 .withKG(0.05385)
                 .withGravityType(GravityTypeValue.Arm_Cosine))

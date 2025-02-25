@@ -70,7 +70,7 @@ public class Rollers extends SubsystemBase {
   }
   
   public Command stopRollers(){
-    return this.runOnce(()->m_rollersMotor.stopMotor());
+    return this.runOnce(()->m_rollersMotor.setVoltage(0));
   }
 
   public Command setSpeedForSeconds(Voltage voltage, Time time){
