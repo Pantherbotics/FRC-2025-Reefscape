@@ -26,14 +26,16 @@
  import edu.wpi.first.math.Matrix;
  import edu.wpi.first.math.VecBuilder;
  import edu.wpi.first.math.geometry.Pose2d;
- import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
  import edu.wpi.first.math.numbers.N1;
  import edu.wpi.first.math.numbers.N3;
- import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+ import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 
-import java.util.ArrayList;
 import java.util.List;
  import java.util.Optional;
  import org.photonvision.EstimatedRobotPose;
@@ -46,6 +48,8 @@ import java.util.List;
  import org.photonvision.targeting.PhotonTrackedTarget;
  
  public class Vision {
+
+    private final StructArrayPublisher<Pose3d> pub = NetworkTableInstance.getDefault().getTable("Pose").getStructArrayTopic("EstimatedPoses", Pose3d.struct).publish();
 
     private final PhotonCamera leftCam = new PhotonCamera(VisionConstants.kLeftCamName);
     private final PhotonCamera rightCam = new PhotonCamera(VisionConstants.kRightCamName);
@@ -126,7 +130,13 @@ import java.util.List;
      }
 
      public List<Optional<EstimatedRobotPose>> getEstimatedGlobalPoses(){
-        return List.of(getEstimatedGlobalPose(leftCam, leftEstimator), getEstimatedGlobalPose(rightCam, rightEstimator));
+        var estPoses = List.of(getEstimatedGlobalPose(leftCam, leftEstimator), getEstimatedGlobalPose(rightCam, rightEstimator));
+        Pose3d[] poses = new Pose3d[2];
+        for (int i = 0; i < estPoses.size(); i++) {
+            poses[i] = estPoses.get(i).map(p -> p.estimatedPose).orElse(Pose3d.kZero); // Use null or a default instance
+        }
+        pub.set(poses);
+        return estPoses;
      }
  
      /**
@@ -136,7 +146,7 @@ import java.util.List;
       * @param estimatedPose The estimated pose to guess standard deviations for.
       * @param targets All targets in this camera frame
       */
-     private void updateEstimationStdDevs(
+     public void updateEstimationStdDevs(
              Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
          if (estimatedPose.isEmpty()) {
              // No pose input. Default to single-tag std devs

@@ -19,14 +19,19 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.DrivetrainConstants;
@@ -273,6 +278,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
+    }
+
+    public Command wheelRadiusCharacterization(){
+        Distance driveRadius = Meters.of(this.getModuleLocations()[0].getNorm());
+        SwerveRequest.ApplyRobotSpeeds req = new SwerveRequest.ApplyRobotSpeeds();
+        ChassisSpeeds rotationSpeeds = new ChassisSpeeds(MetersPerSecond.zero(),MetersPerSecond.zero(),RotationsPerSecond.of(0.2));
+        return this.runOnce(
+            ()->{
+                SmartDashboard.putString("command", "resetting");
+                this.getPigeon2().reset();
+                for (var module: this.getModules()){
+                    module.getDriveMotor().setPosition(0);
+                }
+            }
+        ).andThen(
+            Commands.waitSeconds(1)
+        ).andThen(
+            this.runEnd(
+                ()->this.setControl(m_pathApplyRobotSpeeds.withSpeeds(rotationSpeeds)),
+                ()->this.setControl(m_pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds()))
+            ).raceWith(Commands.waitSeconds(5))
+        ).andThen(Commands.waitSeconds(1)
+        ).andThen(
+            this.runOnce(()->{
+                var gyroAngle = this.getPigeon2().getYaw().getValue();
+                Angle wheelRotations = Rotations.zero();
+                for (var module: this.getModules()){
+                    wheelRotations = wheelRotations.plus(Rotations.of((module.getDriveMotor().getPosition().getValue().abs(Rotation))/TunerConstants.FrontLeft.DriveMotorGearRatio));
+                }
+                var avgRotations = wheelRotations.div(4d);
+                Distance moduleDist = driveRadius.times(Math.PI * 2).times(gyroAngle.in(Rotations));
+                Distance wheelRadius = moduleDist.div(avgRotations.in(Rotations) * Math.PI*2d);
+                SmartDashboard.putNumber("radius inches", wheelRadius.in(Inches));
+            })
+        );
     }
 
     @Override

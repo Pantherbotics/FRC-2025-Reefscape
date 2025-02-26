@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Dictionary;
@@ -57,13 +58,14 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Per;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
 /** Add your docs here. */
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDConstants kTranslationConstants = new PIDConstants(7, 0.6);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(7.5, 1);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
@@ -82,7 +84,7 @@ public class Constants {
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
 
         public static final double kDistToleranceMeters = 0.03;
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(3, 3, 7);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
     
     };
@@ -190,10 +192,11 @@ public class Constants {
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
-        public static final Voltage kIntakeVoltage = Volts.of(3);
-        public static final Voltage kSeatVoltage = Volts.of(1);
-        public static final Voltage kBackVoltage = Volts.of(-0.75);
+        public static final Voltage kIntakeVoltage = Volts.of(3.5);
+        public static final Voltage kSeatVoltage = Volts.of(1.25);
+        public static final Voltage kBackVoltage = Volts.of(-0.8);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
+        public static final Time kOuttakeTime = Seconds.of(0.5);
 
 
         public static final SparkBaseConfig kMotorConfig = new SparkFlexConfig()
@@ -212,6 +215,7 @@ public class Constants {
         public static final int kServoID = 0;
         public static final int kRollersMotorID = 25;
         public static final double kPositionTolerance = 0.05;
+        public static final Voltage kIntakeVoltage = Volts.of(3.4);
         public static final TalonFXSConfiguration kMotorConfig = new TalonFXSConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(40)
@@ -329,7 +333,7 @@ public class Constants {
 
         public static void setupPositionTable(){
             EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
-            EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-16.5)));
+            EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-15)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
             EEStates.put("coral station", new EEState(Inches.of(3), Degrees.of(-24)));
             EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));

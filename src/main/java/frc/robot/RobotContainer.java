@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlgaePivotConstants;
 import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.CoralIntakeConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
@@ -124,12 +126,12 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
     
     // Intake command
-    joystick.leftBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(Commands.idle()),
         rollers.seatCoral(),
         coralIntake.setRollersVoltage(Volts.of(3.2)).andThen(coralIntake.setPulseWidth(1700)).repeatedly()
-      ).withName("Coral station intake").unless(rollers::hasCoral)
+      ).withName("Coral station intake")
     );
 
     // L3 commands
@@ -140,8 +142,8 @@ public class RobotContainer {
         Commands.waitUntil(()->!joystick.getHID().getLeftBumperButton()),
         Commands.waitUntil(()->joystick.getHID().getLeftBumperButton()),
         Commands.waitUntil(()->!joystick.getHID().getLeftBumperButton()),
-        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
-        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+        rollers.setSpeedForSeconds(RollerConstants.kOuttakeVoltage, RollerConstants.kOuttakeTime),
+        rollers.stopRollers()
       ).withName("L3 left bumper")
     );
     joystick.rightBumper().and(rollers::isSeated).onTrue(
@@ -151,8 +153,8 @@ public class RobotContainer {
         Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
         Commands.waitUntil(()->joystick.getHID().getRightBumperButton()),
         Commands.waitUntil(()->!joystick.getHID().getRightBumperButton()),
-        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
-        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+        rollers.setSpeedForSeconds(RollerConstants.kOuttakeVoltage, RollerConstants.kOuttakeTime),
+        rollers.stopRollers()
       ).withName("L3 right bumper")
     );
 
@@ -164,8 +166,8 @@ public class RobotContainer {
         Commands.waitUntil(()->!joystick.getHID().getStartButton()),
         Commands.waitUntil(()->joystick.getHID().getStartButton()),
         Commands.waitUntil(()->!joystick.getHID().getStartButton()),
-        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
-        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+        rollers.setSpeedForSeconds(RollerConstants.kOuttakeVoltage, RollerConstants.kOuttakeTime),
+        rollers.stopRollers()
       ).withName("L2")
     );
 
@@ -176,14 +178,14 @@ public class RobotContainer {
         Commands.waitUntil(()->!joystick.getHID().getBackButton()),
         Commands.waitUntil(()->joystick.getHID().getBackButton()),
         Commands.waitUntil(()->!joystick.getHID().getBackButton()),
-        rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)),
-        rollers.setRollerSpeed(Volts.zero()).raceWith(Commands.waitSeconds(0.1))
+        rollers.setSpeedForSeconds(RollerConstants.kOuttakeVoltage, RollerConstants.kOuttakeTime),
+        rollers.stopRollers()
       ).withName("L2")
     );
 
     // Alignment commands
-    joystick.rightBumper().or(joystick.start()).and(rollers::isSeated).debounce(0.115, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, false, false).withName("Left align"));
-    joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.115, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true, false).withName("Right Align"));
+    joystick.rightBumper().or(joystick.start()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, false, false).withName("Left align"));
+    joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true, false).withName("Right Align"));
 
     // Algae commands
     joystick.rightBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
@@ -242,7 +244,7 @@ public class RobotContainer {
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(Commands.idle()),
         rollers.seatCoral(),
-        coralIntake.setRollersVoltage(Volts.of(3.2)).andThen(coralIntake.setPulseWidth(1700)).repeatedly()
+        coralIntake.setRollersVoltage(CoralIntakeConstants.kIntakeVoltage).andThen(coralIntake.setPulseWidth(1700)).repeatedly()
       ));
     // joystick.y().onTrue(
     //   Commands.parallel(
@@ -268,10 +270,11 @@ public class RobotContainer {
       item.ifPresent(
         est -> {
             // Change our trust in the measurement based on the tags we can see
+            vision.updateEstimationStdDevs(item, item.get().targetsUsed);
             var estStdDevs = vision.getEstimationStdDevs();
 
             drivetrain.addVisionMeasurement(
-                    est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                    est.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(est.timestampSeconds), estStdDevs);
         });
     }
         

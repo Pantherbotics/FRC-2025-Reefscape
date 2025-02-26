@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.EndEffector;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
@@ -16,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RollerConstants;
 
@@ -37,7 +34,6 @@ public class Rollers extends SubsystemBase {
   private final LaserCan m_laserCan = new LaserCan(RollerConstants.kLaserCANID);
   private final SparkFlex m_rollersMotor = new SparkFlex(RollerConstants.kRollersMotorID, MotorType.kBrushless);
   private final SparkClosedLoopController m_controller = m_rollersMotor.getClosedLoopController();
-  private final Debouncer m_debouncer = new Debouncer(RollerConstants.kDebounceTime, DebounceType.kBoth);
   private final Alert m_lasercanAlert = new Alert("Lasercan Bad reading", AlertType.kError);
   private boolean isSeated = false;
 
@@ -59,7 +55,7 @@ public class Rollers extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return Utils.isSimulation()?true:m_debouncer.calculate(laserCANReading());
+    return Utils.isSimulation()?true:laserCANReading();
   }
 
   public Command setRollerSpeed(Voltage voltage) {
