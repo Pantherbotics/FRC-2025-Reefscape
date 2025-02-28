@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -41,6 +42,13 @@ public class AlgaePivot extends SubsystemBase {
     m_pivotMotor.getConfigurator().apply(AlgaePivotConstants.kPivotConstants);
     m_pivotMotor.setPosition(Degrees.of(90));
     SmartDashboard.putData(this);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(250, 
+      m_pivotMotor.getVelocity(),
+      m_pivotMotor.getPosition(),
+      m_pivotMotor.getMotorVoltage()
+    );
+
   }
 
   public Angle getAngle(){
@@ -68,7 +76,7 @@ public class AlgaePivot extends SubsystemBase {
   public boolean isAtGoal(){
     return m_pivotMotor.getPosition().getValue().isNear(m_goalAngle, AlgaePivotConstants.kPositionTolerance);
   }
-
+  public void meaningOfLife(){}
 
   @Override
   public void periodic() {

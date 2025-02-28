@@ -150,6 +150,7 @@ public class Constants {
         public static final Angle kMaxAngle = Degrees.of(30);
         public static final Angle kMinAngle = Degrees.of(-30);
 
+
         public static final TalonFXConfiguration kPivotMotorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
                 .withKP(200)
@@ -192,8 +193,8 @@ public class Constants {
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
-        public static final Voltage kIntakeVoltage = Volts.of(3.5);
-        public static final Voltage kSeatVoltage = Volts.of(1.25);
+        public static final Voltage kIntakeVoltage = Volts.of(3.3);
+        public static final Voltage kSeatVoltage = Volts.of(1.1);
         public static final Voltage kBackVoltage = Volts.of(-0.8);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final Time kOuttakeTime = Seconds.of(0.5);
@@ -241,24 +242,26 @@ public class Constants {
         public static final Angle kUpAngle = Degrees.of(90);
         public static final Angle kDownAngle = Degrees.of(20);
         public static final Angle kPositionTolerance = Degrees.of(2);
-
+        private static final Slot0Configs slot0_config = new Slot0Configs()
+        .withKP(200)
+        .withKI(0)
+        .withKD(0)
+        .withKS(0.23461)
+        .withKV(9)
+        .withKA(0.082634)
+        .withKG(0.055231)
+        .withGravityType(GravityTypeValue.Arm_Cosine)
+        ;
         public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(60)
                 .withSupplyCurrentLimit(90))
-            .withSlot0(new Slot0Configs()
-                .withKP(10)
-                .withKI(0)
-                .withKD(0.0)
-                .withKS(0.09625)
-                .withKV(10)
-                .withKA(0.2368)
-                .withKG(0.05385)
-                .withGravityType(GravityTypeValue.Arm_Cosine))
+            .withSlot0(slot0_config)
+            
             .withMotionMagic(new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(10)
-                .withMotionMagicExpo_kV(25.171)
-                .withMotionMagicExpo_kA(0.2368))
+                .withMotionMagicExpo_kV(slot0_config.kV)
+                .withMotionMagicExpo_kA(slot0_config.kA))
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)
                 .withInverted(InvertedValue.Clockwise_Positive))
@@ -268,6 +271,8 @@ public class Constants {
     }
 
     public static class AlgaeRollerConstants{
+        public static final double kThreshold = 600;
+        public static final int kLaserCANID = 1;
         public static final Voltage kIntakeVoltage = Volts.of(-5);
         public static final Voltage kOuttakeVoltage = Volts.of(3);
         public static final int kMotorID = 28;

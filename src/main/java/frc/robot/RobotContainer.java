@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AlgaePivotConstants;
 import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
@@ -101,7 +103,7 @@ public class RobotContainer {
     // joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
     // joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
 
-    // algae pivot
+    // // algae pivot
     // joystick.start().and(joystick.a()).whileTrue(algaePivot.sysIdDynamicCommand(Direction.kForward));
     // joystick.start().and(joystick.b()).whileTrue(algaePivot.sysIdDynamicCommand(Direction.kReverse));
     // joystick.back().and(joystick.a()).whileTrue(algaePivot.sysIdQuasistaticCommand(Direction.kForward));
@@ -113,13 +115,13 @@ public class RobotContainer {
     // joystick.back().and(joystick.a()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kForward));
     // joystick.back().and(joystick.b()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kReverse));
 
-    // drivetrain
+    // // drivetrain
     // joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
     // joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
     // joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-    // pivot
+    // // pivot
     // joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
     // joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
     // joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
@@ -213,8 +215,10 @@ public class RobotContainer {
     joystick.leftTrigger().toggleOnTrue(
       Commands.sequence(
         algaePivot.setAngleCommand(AlgaePivotConstants.kDownAngle)
-        .alongWith(algaeRoller.runUntilCurrent(AlgaeRollerConstants.kIntakeVoltage, Amps.of(12))
-          .andThen(algaeRoller.setVoltage(Volts.zero()))
+        .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kIntakeVoltage)
+        )
+        .raceWith(Commands.waitUntil(algaeRoller::hasAlgae)
+                  .andThen(Commands.waitUntil(()->!algaeRoller.hasAlgae()))
         )
         //   .raceWith(algaeRoller.setVoltage(AlgaeRollerConstants.kIntakeVoltage)),
         // Commands.waitUntil(joystick.leftTrigger().negate()),
@@ -231,9 +235,9 @@ public class RobotContainer {
 
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
 
-    joystick.povLeft().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
-    joystick.povRight().onTrue(climber.setWinchPosition(Degrees.zero()).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
-
+    joystick.x().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+    joystick.b().onTrue(climber.setWinchPosition(Degrees.zero()).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+// pressing anything that has b() as a joytstick thing also fires this ^
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, true, true));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, false, true));
     NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
