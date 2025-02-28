@@ -81,7 +81,7 @@ public class RobotContainer {
         .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
       )
     );
-    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")).repeatedly());
+    elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
     coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()).raceWith(Commands.waitSeconds(0.1)).andThen(coralIntake.disableServo()));
@@ -191,14 +191,14 @@ public class RobotContainer {
     joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true, false).withName("Right Align"));
 
     // Algae commands
-    joystick.rightBumper().debounce(0.1).and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.rightBumper().debounce(0.1, DebounceType.kRising).and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
       ).withName("Algae removal 2")
     );
 
-    joystick.start().debounce(0.1).and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.start().debounce(0.1, DebounceType.kRising).and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)

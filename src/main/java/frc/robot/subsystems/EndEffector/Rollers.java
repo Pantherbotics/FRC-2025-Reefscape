@@ -34,7 +34,6 @@ public class Rollers extends SubsystemBase {
   private final LaserCan m_laserCan = new LaserCan(RollerConstants.kLaserCANID);
   private final SparkFlex m_rollersMotor = new SparkFlex(RollerConstants.kRollersMotorID, MotorType.kBrushless);
   private final SparkClosedLoopController m_controller = m_rollersMotor.getClosedLoopController();
-  private final Alert m_lasercanAlert = new Alert("Lasercan Bad reading", AlertType.kError);
   private boolean isSeated = false;
 
   public Rollers() {
@@ -46,10 +45,8 @@ public class Rollers extends SubsystemBase {
     LaserCan.Measurement measurement = m_laserCan.getMeasurement();
     // return measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT ? measurement.distance_mm < RollerConstants.kThreshold : false;
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      m_lasercanAlert.set(false);
       return measurement.distance_mm < RollerConstants.kThreshold;
     } else {
-      m_lasercanAlert.set(true);
       return false;
     }
   }

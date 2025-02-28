@@ -81,5 +81,6 @@ public class AlgaePivot extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("AlgaeAtGoal", isAtGoal());
+    SmartDashboard.putNumber("AlgaePivot", m_pivotMotor.getPosition().getValue().in(Degrees));
   }
 }
