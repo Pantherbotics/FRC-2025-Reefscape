@@ -43,7 +43,7 @@ public class AlgaePivot extends SubsystemBase {
     m_pivotMotor.setPosition(Degrees.of(90));
     SmartDashboard.putData(this);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(250, 
+    BaseStatusSignal.setUpdateFrequencyForAll(100, 
       m_pivotMotor.getVelocity(),
       m_pivotMotor.getPosition(),
       m_pivotMotor.getMotorVoltage()
@@ -81,6 +81,5 @@ public class AlgaePivot extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("AlgaeAtGoal", isAtGoal());
-    SmartDashboard.putNumber("algae angle", getAngle().in(Degrees));
   }
 }

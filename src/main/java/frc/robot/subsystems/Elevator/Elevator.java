@@ -43,10 +43,10 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
     hasZeroedSinceBoot = false;
     m_leaderMotor.getConfigurator().apply(ElevatorConstants.kElevatorConfigs);
-    m_followerMotor.getConfigurator().apply(ElevatorConstants.kFolllowerConfigs);
+    m_followerMotor.getConfigurator().apply(ElevatorConstants.kFollowerConfigs);
     m_followerMotor.setControl(new Follower(ElevatorConstants.kLeaderMotorID, true));
 
-    BaseStatusSignal.setUpdateFrequencyForAll(250,
+    BaseStatusSignal.setUpdateFrequencyForAll(100,
         m_leaderMotor.getPosition(),
         m_leaderMotor.getVelocity(),
         m_leaderMotor.getMotorVoltage(),

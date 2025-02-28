@@ -45,7 +45,7 @@ public class Pivot extends SubsystemBase {
     m_pivotMotor.getConfigurator().apply(PivotConstants.kPivotMotorConfigs);
     m_pivotEncoder.getConfigurator().apply(PivotConstants.kEncoderConfigs);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(250,
+    BaseStatusSignal.setUpdateFrequencyForAll(100,
       m_pivotMotor.getPosition(),
       m_pivotMotor.getVelocity(),
       m_pivotMotor.getMotorVoltage(),

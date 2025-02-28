@@ -102,9 +102,9 @@ public class Constants {
 
         public static final TalonFXConfiguration kElevatorConfigs = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs() // voltage
-                .withKP(10.3)//450.42)
+                .withKP(9)//450.42)
                 .withKI(0)
-                .withKD(0.37)//1.943)
+                .withKD(0.48)//1.943)
                 .withKS(0.2077)
                 .withKV(0.12234)
                 .withKG(0.033)
@@ -131,7 +131,7 @@ public class Constants {
                 .withReverseSoftLimitEnable(false)
             );
 
-        public static final TalonFXConfiguration kFolllowerConfigs = 
+        public static final TalonFXConfiguration kFollowerConfigs = 
             kElevatorConfigs.withMotorOutput(new MotorOutputConfigs()
               .withInverted(InvertedValue.CounterClockwise_Positive)  
             );   

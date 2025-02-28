@@ -55,21 +55,10 @@ public class AlgaeRoller extends SubsystemBase {
     return Utils.isSimulation()?true:laserCANReading();
   }
 
-  private double laserCANDistance(){
-    LaserCan.Measurement measurement = m_laserCan.getMeasurement();
-    // return measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT ? measurement.distance_mm < RollerConstants.kThreshold : false;
-    if (measurement != null) {
-      return measurement.distance_mm;
-    }
-    else {
-      return -1;
-    }
-  }
+
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("laser can distance", laserCANDistance());
-    SmartDashboard.putBoolean("algae lasercan reading", laserCANReading());
     SmartDashboard.putBoolean("has algae", hasAlgae());
   }
 }

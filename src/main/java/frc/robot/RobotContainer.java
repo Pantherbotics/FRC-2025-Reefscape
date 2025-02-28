@@ -136,11 +136,12 @@ public class RobotContainer {
       ).withName("Coral station intake")
     );
 
+    
     // L3 commands
     joystick.leftBumper().and(rollers::isSeated).onTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3"))
-          .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
+        .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
         Commands.waitUntil(()->!joystick.getHID().getLeftBumperButton()),
         Commands.waitUntil(()->joystick.getHID().getLeftBumperButton()),
         Commands.waitUntil(()->!joystick.getHID().getLeftBumperButton()),
@@ -190,14 +191,14 @@ public class RobotContainer {
     joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, true, false).withName("Right Align"));
 
     // Algae commands
-    joystick.rightBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.rightBumper().debounce(0.1).and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
       ).withName("Algae removal 2")
     );
 
-    joystick.start().and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.start().debounce(0.1).and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
@@ -235,7 +236,7 @@ public class RobotContainer {
 
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
 
-    joystick.x().onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+    joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
     joystick.b().onTrue(climber.setWinchPosition(Degrees.zero()).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
 // pressing anything that has b() as a joytstick thing also fires this ^
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, true, true));
