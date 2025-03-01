@@ -50,6 +50,10 @@ public class Climber extends SubsystemBase {
     });
   }
 
+  public Angle winchAngle(){
+    return Rotations.of(m_winchMotor.getPosition().getValueAsDouble()/ClimberConstants.kUpAngle.in(Rotations));
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("winch position", m_winchMotor.getPosition().getValue().in(Rotation));

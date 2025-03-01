@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
 import frc.robot.Constants.VisionConstants;
 
+import java.util.ArrayList;
 import java.util.List;
  import java.util.Optional;
  import org.photonvision.EstimatedRobotPose;
@@ -49,7 +50,9 @@ import java.util.List;
  
  public class Vision {
 
-    private final StructArrayPublisher<Pose3d> pub = NetworkTableInstance.getDefault().getTable("Pose").getStructArrayTopic("EstimatedPoses", Pose3d.struct).publish();
+    private final StructArrayPublisher<Pose3d> estPub = NetworkTableInstance.getDefault().getTable("Pose").getStructArrayTopic("EstimatedPoses", Pose3d.struct).publish();
+    private final StructArrayPublisher<Pose3d> leftTargetPub = NetworkTableInstance.getDefault().getTable("Pose").getSubTable("VisionTargets").getStructArrayTopic("left vision targets", Pose3d.struct).publish();
+    private final StructArrayPublisher<Pose3d> rightTargetPub = NetworkTableInstance.getDefault().getTable("Pose").getSubTable("VisionTargets").getStructArrayTopic("right vision targets", Pose3d.struct).publish();
 
     private final PhotonCamera leftCam = new PhotonCamera(VisionConstants.kLeftCamName);
     private final PhotonCamera rightCam = new PhotonCamera(VisionConstants.kRightCamName);
@@ -79,8 +82,8 @@ import java.util.List;
              visionSim.addAprilTags(VisionConstants.kAprilTagLayout);
              // Create simulated camera properties. These can be set to mimic your actual camera.
              var cameraProp = new SimCameraProperties();
-             cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
-             cameraProp.setCalibError(0.35, 0.10);
+             cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(70));
+             cameraProp.setCalibError(0.4, 0.20);
              cameraProp.setFPS(60);
              cameraProp.setAvgLatencyMs(50);
              cameraProp.setLatencyStdDevMs(15);
@@ -135,9 +138,36 @@ import java.util.List;
         for (int i = 0; i < estPoses.size(); i++) {
             poses[i] = estPoses.get(i).map(p -> p.estimatedPose).orElse(Pose3d.kZero); // Use null or a default instance
         }
-        pub.set(poses);
+        estPub.set(poses);
+        var targetPoses = extractTagPoses(estPoses);
+        leftTargetPub.set(targetPoses[0]);
+        rightTargetPub.set(targetPoses[1]);
         return estPoses;
      }
+
+     public static Pose3d[][] extractTagPoses(List<Optional<EstimatedRobotPose>> estimatedPoses) {
+        Pose3d[][] tagPosesArray = new Pose3d[estimatedPoses.size()][];
+
+        for (int i = 0; i < estimatedPoses.size(); i++) {
+            Optional<EstimatedRobotPose> estimatedPoseOpt = estimatedPoses.get(i);
+            List<Pose3d> tagPoses = new ArrayList<>();
+
+            if (estimatedPoseOpt.isPresent()) {
+                EstimatedRobotPose estimatedPose = estimatedPoseOpt.get();
+
+                for (PhotonTrackedTarget target : estimatedPose.targetsUsed) {
+                    Optional<Pose3d> tagPoseOpt = VisionConstants.kAprilTagLayout.getTagPose(target.getFiducialId());
+                    tagPoseOpt.ifPresent(tagPoses::add);
+                }
+            }
+
+            // Convert List<Pose3d> to Pose3d[] and store it in the array
+            tagPosesArray[i] = tagPoses.toArray(new Pose3d[0]);
+        }
+
+        return tagPosesArray;
+    }
+
  
      /**
       * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard

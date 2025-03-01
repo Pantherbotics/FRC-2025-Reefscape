@@ -8,7 +8,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
-import com.google.gson.ReflectionAccessFilter;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import static edu.wpi.first.units.Units.*;
@@ -28,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlgaePivotConstants;
 import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.CoralIntakeConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
@@ -46,6 +44,7 @@ import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.Pivot;
 import frc.robot.subsystems.EndEffector.Rollers;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.Visualizer;
 
 public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
@@ -58,8 +57,8 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final AlgaePivot algaePivot = new AlgaePivot();
   private final AlgaeRoller algaeRoller = new AlgaeRoller();
-
   private final Vision vision = new Vision();
+  public final Visualizer visualizer = new Visualizer(pivot, elevator, algaePivot, climber);
 
 
 
@@ -242,8 +241,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
-    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
-    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
+    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)));
     NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)).withTimeout(Seconds.of(3)));
@@ -253,7 +252,7 @@ public class RobotContainer {
       new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
         coralIntake.setRollersVoltage(Volts.of(3.2))),
       rollers.seatCoral()
-    ));
+    ).withTimeout(5));
     // joystick.y().onTrue(
     //   Commands.parallel(
     //     climber.setWinchPosition(ClimberConstants.kUpAngle),

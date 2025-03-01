@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import javax.lang.model.util.ElementScanner6;
-
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -34,20 +32,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotContainer.updateVision();
-
-        // Correct pose estimate with vision measurements
-        
-    // Vision.updateCamera();
-    // if (Vision.leftEstimatedPose.isPresent()){
-    //   var leftPose = Vision.leftEstimatedPose.get();
-    //   m_robotContainer.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(leftPose.timestampSeconds), Vision.getCurrentStdDev());
-    // }
-    // if (Vision.rightEstimatedPose.isPresent()){
-    //   var rightPose = Vision.rightEstimatedPose.get();
-    //   m_robotContainer.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), Utils.fpgaToCurrentTime(rightPose.timestampSeconds));
-    // } 
-
     CommandScheduler.getInstance().run();
+    m_robotContainer.visualizer.update();
   }
 
   @Override
@@ -64,9 +50,12 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    } else {
-      m_robotContainer.moveAuto().schedule();;
+      if (m_autonomousCommand.getRequirements().size() == 0){
+        m_robotContainer.moveAuto().schedule();
+      } else {
+        System.out.println(m_autonomousCommand.getRequirements().size());
+        m_autonomousCommand.schedule();
+      }
     }
   }
 
