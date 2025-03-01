@@ -83,7 +83,7 @@ import java.util.List;
              // Create simulated camera properties. These can be set to mimic your actual camera.
              var cameraProp = new SimCameraProperties();
              cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(70));
-             cameraProp.setCalibError(0.4, 0.20);
+             cameraProp.setCalibError(0.4, 0.10);
              cameraProp.setFPS(60);
              cameraProp.setAvgLatencyMs(50);
              cameraProp.setLatencyStdDevMs(15);
