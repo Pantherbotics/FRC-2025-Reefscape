@@ -24,7 +24,7 @@ public class CoralIntake extends SubsystemBase {
   public CoralIntake() {
     m_pivotServo.setBoundsMicroseconds(1950, 1750, 1500, 1250, 1050);
     m_RollersMotor.getConfigurator().apply(CoralIntakeConstants.kMotorConfig);
-    // m_pivotServo.setZeroLatch();
+    m_pivotServo.setPulseTimeMicroseconds(1700);
     SmartDashboard.putData(this);
   }
 
@@ -52,7 +52,7 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public Command setRollersVoltage(Voltage volts) {
-    return this.runOnce(() -> m_RollersMotor.setVoltage(volts.in(Volts)));
+    return this.run(() -> m_RollersMotor.setVoltage(volts.in(Volts)));
   }
 
   public boolean pivotAtGoal(){

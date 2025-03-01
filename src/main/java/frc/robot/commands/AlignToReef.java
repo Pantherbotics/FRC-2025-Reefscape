@@ -15,6 +15,8 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
@@ -25,7 +27,7 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
 public class AlignToReef extends Command {
   private CommandSwerveDrivetrain drivetrain;
-  private boolean isLeftSide;
+  private ReefSide reefSide;
   private boolean endWhenClose;
   private Pose2d goalPose;
   private final int kRedIDoffset = 5;
@@ -44,24 +46,41 @@ public class AlignToReef extends Command {
   private final double kTranslationDeadband = 0.05;
   private final double kMaxRotationSpeed = 1.5 * Math.PI;
   private final double kRotationDeadband = 0.2;
+  private Transform2d transform = Transform2d.kZero;
 
   /**
    * Auto alignment for reef scoring
    * @param drivetrain the drivetrain subsystem
    * @param isLeftSide True if the robot should align to the left reef branch
-   * @param reefSide which side of the reef the robot should align to, from 1-6. ID's start with the bottom right side and increase counterclockwise.
+   * @param ReefSide which side of the reef the robot should align to, from 1-6. ID's start with the bottom right side and increase counterclockwise.
    * @param isRedAlliance True if the pose should be mirrored for the Blue alliance.
    */
-  public AlignToReef(CommandSwerveDrivetrain drivetrain, boolean isLeftSide, boolean endWhenClose) {
+  public enum ReefSide{
+    LEFT,
+    RIGHT,
+    CENTER
+  }
+  public AlignToReef(CommandSwerveDrivetrain drivetrain, ReefSide side, boolean endWhenClose) {
     this.drivetrain = drivetrain;
-    this.isLeftSide = isLeftSide;
+    this.reefSide = side;
     this.endWhenClose = endWhenClose;
     addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() {
-    goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(isLeftSide?VisionConstants.kLeftTransform:VisionConstants.kRightTransform);
+    switch (reefSide){
+      case LEFT:
+        this.transform = VisionConstants.kLeftTransform;
+        break;
+      case RIGHT:
+        this.transform = VisionConstants.kRightTransform;
+        break;
+      case CENTER:
+        this.transform = VisionConstants.kCenterTransform;
+        break;
+    }
+    goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(transform);
     pub.set(goalPose);
   }
 
@@ -95,6 +114,7 @@ public class AlignToReef extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()));
   }
 
   // Returns true when the command should end.

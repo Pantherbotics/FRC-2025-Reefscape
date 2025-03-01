@@ -30,13 +30,45 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "align left"
+                  "name": "align center"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "position L2"
+                  "name": "remove algae 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "position L3"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "align left"
                 }
               }
             ]
@@ -60,6 +92,12 @@
                       "type": "path",
                       "data": {
                         "pathName": "To source"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
                       }
                     },
                     {

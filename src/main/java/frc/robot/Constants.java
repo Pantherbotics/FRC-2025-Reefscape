@@ -47,7 +47,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -68,7 +67,7 @@ public class Constants {
         public static final PIDConstants kTranslationConstants = new PIDConstants(7.5, 1);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
-        public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1.125);
+        public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
     }
 
 
@@ -80,12 +79,13 @@ public class Constants {
 
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
-        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
-        public static final double kDistToleranceMeters = 0.03;
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(3, 3, 7);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+        public static final double kDistToleranceMeters = Units.inchesToMeters(2.5);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2.75, 2.75, 7);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.4, 0.4, 1);
     
     };
 
@@ -291,7 +291,7 @@ public class Constants {
     public static class ClimberConstants {
         public static final int kClimberMotorID = 26; // NOT FINAL
         public static final int kLatchServoID = 9;
-        public static final Angle kUpAngle = Rotations.of(-170.437012);
+        public static final Angle kUpAngle = Rotations.of(-132.577637);
         public static final TalonFXConfiguration kWinchConfigs = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)
