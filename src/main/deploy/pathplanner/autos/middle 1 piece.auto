@@ -54,9 +54,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "align right"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Move back"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align right"
+                      }
+                    }
+                  ]
                 }
               },
               {
