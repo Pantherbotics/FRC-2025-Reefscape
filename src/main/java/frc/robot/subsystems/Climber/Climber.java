@@ -10,9 +10,11 @@ import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +32,10 @@ public class Climber extends SubsystemBase {
       ClimberConstants.kWinchConfigs
     );
     m_winchMotor.setPosition(0);
+  }
+
+  public Command setVoltage(Voltage voltage){
+    return this.runOnce(()->m_winchMotor.setControl(new VoltageOut(voltage))).andThen(Commands.idle(this));
   }
 
   public Command setWinchPosition(Angle angle){
@@ -51,7 +57,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Angle winchAngle(){
-    return Rotations.of(m_winchMotor.getPosition().getValueAsDouble()/ClimberConstants.kUpAngle.in(Rotations));
+    return Rotations.of(m_winchMotor.getPosition().getValueAsDouble()/(ClimberConstants.kUpAngle.in(Rotations) * 4));
   }
 
   @Override

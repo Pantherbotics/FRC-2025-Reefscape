@@ -6,6 +6,7 @@ package frc.robot.subsystems.CoralIntake;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.TalonFXS;
 
 import edu.wpi.first.math.MathUtil;
@@ -26,6 +27,11 @@ public class CoralIntake extends SubsystemBase {
     m_RollersMotor.getConfigurator().apply(CoralIntakeConstants.kMotorConfig);
     m_pivotServo.setPulseTimeMicroseconds(1700);
     SmartDashboard.putData(this);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(75, 
+      m_RollersMotor.getStatorCurrent(),
+      m_RollersMotor.getMotorVoltage()
+    );
   }
 
   public Command setServoPosition(double position) {
@@ -34,6 +40,7 @@ public class CoralIntake extends SubsystemBase {
       m_pivotServo.set(goal);
     });
   }
+
 
   public Command disableServo(){
     return this.runOnce(()->m_pivotServo.setDisabled());

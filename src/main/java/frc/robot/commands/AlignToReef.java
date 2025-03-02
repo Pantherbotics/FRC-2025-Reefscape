@@ -42,8 +42,8 @@ public class AlignToReef extends Command {
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private StructTopic<Pose2d> topic = inst.getStructTopic("GoalPose", Pose2d.struct);
   private StructPublisher<Pose2d> pub = topic.publish();
-  private final double kMaxTranslationSpeed = 4;
-  private final double kTranslationDeadband = 0.05;
+  private final double kMaxTranslationSpeed = 3;
+  private final double kTranslationDeadband = 0.02;
   private final double kMaxRotationSpeed = 1.5 * Math.PI;
   private final double kRotationDeadband = 0.2;
   private Transform2d transform = Transform2d.kZero;
@@ -114,7 +114,9 @@ public class AlignToReef extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()));
+    if (this.endWhenClose){
+      drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()));
+    }
   }
 
   // Returns true when the command should end.

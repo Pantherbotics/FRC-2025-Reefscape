@@ -22,10 +22,12 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.signals.AdvancedHallSupportValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -64,7 +66,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDConstants kTranslationConstants = new PIDConstants(7.5, 1);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(7.5, 0.3);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
@@ -79,13 +81,13 @@ public class Constants {
 
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
-        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
-        public static final double kDistToleranceMeters = Units.inchesToMeters(2.5);
+        public static final double kDistToleranceMeters = Units.inchesToMeters(2);
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2.75, 2.75, 7);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.4, 0.4, 1);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.23, 0.23, 1);
     
     };
 
@@ -228,8 +230,9 @@ public class Constants {
             )
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive)
+            ).withOpenLoopRamps(new OpenLoopRampsConfigs()
+                .withVoltageOpenLoopRampPeriod(0.5)
             );
-            
     }
 
     public static class AlgaePivotConstants {
@@ -278,7 +281,7 @@ public class Constants {
         public static final int kMotorID = 28;
         public static final TalonFXSConfiguration kRollerMotorConfigs = new TalonFXSConfiguration()
         .withCurrentLimits(new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(30)
+            .withStatorCurrentLimit(40)
             .withSupplyCurrentLimit(80))
         .withCommutation(new CommutationConfigs()
             .withMotorArrangement(MotorArrangementValue.Minion_JST)
@@ -291,13 +294,13 @@ public class Constants {
     public static class ClimberConstants {
         public static final int kClimberMotorID = 26; // NOT FINAL
         public static final int kLatchServoID = 9;
-        public static final Angle kUpAngle = Rotations.of(-132.577637);
+        public static final Angle kUpAngle = Rotations.of(-172.577637);
         public static final TalonFXConfiguration kWinchConfigs = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)
                 .withInverted(InvertedValue.Clockwise_Positive))
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(60))
+                .withStatorCurrentLimit(80))
             .withSlot0(new Slot0Configs()
                 .withKP(1)
                 .withKI(0)

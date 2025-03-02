@@ -6,6 +6,8 @@ package frc.robot.subsystems.Vision;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
 import java.util.Arrays;
@@ -46,13 +48,13 @@ public class Visualizer {
     }
 
     public void update(){
-        poses[0] = new Pose3d(m_elevator.elevatorPosition().in(Inches) * 0.0871557427477,0,m_elevator.elevatorPosition().in(Inches) * 0.996194698092,Rotation3d.kZero);
+        poses[0] = new Pose3d(m_elevator.elevatorPosition().in(Meters) * 0.0871557427477,0,m_elevator.elevatorPosition().in(Meters) * 0.996194698092,Rotation3d.kZero);
         poses[1] = poses[0].plus(
             new Transform3d(
                 Inches.of(6.545870), 
                 Inches.of(0), 
                 Inches.of(13.704344),
-                new Rotation3d(Rotations.zero(),m_pivot.pivotAngle(),Rotations.zero()))
+                new Rotation3d(Rotations.zero(),m_pivot.pivotAngle().unaryMinus().minus(Degrees.of(90)),Rotations.zero()))
             );
         poses[2] = new Pose3d(
             Units.inchesToMeters(-12.468750),
@@ -64,7 +66,7 @@ public class Visualizer {
             0,
             Units.inchesToMeters(14), 
             Units.inchesToMeters(11.25), 
-            new Rotation3d(m_climber.winchAngle(),Rotations.zero(),Rotations.zero())
+            new Rotation3d(m_climber.winchAngle().unaryMinus(),Rotations.zero(),Rotations.zero())
           );
 
         componentPub.set(poses);

@@ -15,6 +15,12 @@
                     {
                       "type": "named",
                       "data": {
+                        "name": "zero elevator"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
                         "name": "intake"
                       }
                     },
