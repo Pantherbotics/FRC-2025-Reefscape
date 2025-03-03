@@ -51,6 +51,25 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "path",
+                      "data": {
+                        "pathName": "wiggle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align left"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
                       "type": "named",
                       "data": {
                         "name": "intake"
@@ -63,12 +82,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "align left"
                 }
               }
             ]
@@ -97,7 +110,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 1.3
                       }
                     },
                     {
