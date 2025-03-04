@@ -7,8 +7,13 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -36,6 +41,7 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -45,12 +51,14 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
@@ -66,10 +74,18 @@ import edu.wpi.first.units.measure.Voltage;
 public class Constants {
 
     public static class DrivetrainConstants{
-        public static final PIDConstants kTranslationConstants = new PIDConstants(8, 0.3);
-        public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
+        
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
+
+        public static final ProfiledPIDController kXController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(10), 2)); // Forward/back
+        public static final ProfiledPIDController kYController = new ProfiledPIDController(15, 0, 0.3, new Constraints(Units.feetToMeters(10), 2)); // Left/right
+        public static final ProfiledPIDController kHeadingController = new ProfiledPIDController(30, 0, 0, new Constraints(Units.rotationsToRadians(3), 6)); // rotation
+
+        public static final PIDConstants kTranslationConstants = new PIDConstants(8, 0.3);
+        public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
+
+        public static final PathConstraints kPathConstraints = new PathConstraints(kMaxSpeed, MetersPerSecondPerSecond.of(3), kMaxRotationRate, RotationsPerSecondPerSecond.of(3));
     }
 
 

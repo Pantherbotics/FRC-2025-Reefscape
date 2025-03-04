@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
-
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -33,19 +30,13 @@ public class AlignToReef extends Command {
   private final int kRedIDoffset = 5;
   private final int kBlueIDoffset = 16;
 
-  // private PIDController xController = DrivetrainConstants.kXController;
-  // private PIDController yController = DrivetrainConstants.kYController;
-  // private PIDController headingController = DrivetrainConstants.kHeadingController;
-  private PPHolonomicDriveController cont = new PPHolonomicDriveController(DrivetrainConstants.kTranslationConstants, DrivetrainConstants.kHeadingConstants);
-  private PathPlannerTrajectoryState goal = new PathPlannerTrajectoryState();
+  private ProfiledPIDController xController = DrivetrainConstants.kXController;
+  private ProfiledPIDController yController = DrivetrainConstants.kYController;
+  private ProfiledPIDController headingController = DrivetrainConstants.kHeadingController;
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private StructTopic<Pose2d> topic = inst.getStructTopic("GoalPose", Pose2d.struct);
-  private StructPublisher<Pose2d> pub = topic.publish();
-  private final double kMaxTranslationSpeed = 3;
-  private final double kTranslationDeadband = 0.02;
-  private final double kMaxRotationSpeed = 1.5 * Math.PI;
-  private final double kRotationDeadband = 0.2;
+ private StructPublisher<Pose2d> pub = topic.publish();
   private Transform2d transform = Transform2d.kZero;
 
   /**
@@ -65,6 +56,10 @@ public class AlignToReef extends Command {
     this.reefSide = side;
     this.endWhenClose = endWhenClose;
     addRequirements(drivetrain);
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
+    xController.setGoal(0);
+    yController.setGoal(0);
+    headingController.setGoal(0);
   }
 
   @Override
@@ -96,16 +91,12 @@ public class AlignToReef extends Command {
 
   @Override
   public void execute() {
-    goal.pose = goalPose;
-    var speeds = cont.calculateRobotRelativeSpeeds(drivetrain.getState().Pose, goal);
-    speeds.vxMetersPerSecond = MathUtil.clamp(MathUtil.applyDeadband(speeds.vxMetersPerSecond, kTranslationDeadband), -kMaxTranslationSpeed, kMaxTranslationSpeed);
-    speeds.vyMetersPerSecond =  MathUtil.clamp(MathUtil.applyDeadband(speeds.vyMetersPerSecond, kTranslationDeadband), -kMaxTranslationSpeed, kMaxTranslationSpeed);
-    speeds.omegaRadiansPerSecond = MathUtil.clamp(MathUtil.applyDeadband(speeds.omegaRadiansPerSecond, kRotationDeadband), -kMaxRotationSpeed, kMaxRotationSpeed);
-    // ChassisSpeeds speeds = new ChassisSpeeds(
-    //   xController.calculate(drivetrain.getState().Pose.getX()),
-    //   yController.calculate(drivetrain.getState().Speeds.vyMetersPerSecond),
-    //   headingController.calculate(drivetrain.getState().Speeds.omegaRadiansPerSecond)
-    // );
+    Transform2d toGoal = goalPose.minus(drivetrain.getState().Pose);drivetrain.getState().Pose.minus(goalPose);
+    ChassisSpeeds speeds = new ChassisSpeeds(
+      xController.calculate(-toGoal.getX()),
+      yController.calculate(-toGoal.getY()),
+      headingController.calculate(-toGoal.getRotation().getRadians())
+    );
     drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSpeeds(speeds)
