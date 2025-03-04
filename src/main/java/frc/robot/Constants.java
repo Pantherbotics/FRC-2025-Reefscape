@@ -86,8 +86,8 @@ public class Constants {
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
         public static final double kDistToleranceMeters = Units.inchesToMeters(2);
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2.75, 2.75, 7);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.23, 0.23, 1);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 7);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 1);
     
     };
 
