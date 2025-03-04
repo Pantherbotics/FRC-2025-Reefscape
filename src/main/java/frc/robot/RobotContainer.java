@@ -227,7 +227,7 @@ public class RobotContainer {
     );
 
     joystick.rightTrigger().toggleOnTrue(
-      algaePivot.setAngleCommand(AlgaePivotConstants.kDownAngle)
+      algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle)
       .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kOuttakeVoltage))
       .withName("Algae score")
     );
