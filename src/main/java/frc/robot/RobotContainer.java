@@ -205,6 +205,10 @@ public class RobotContainer {
       ).withName("Algae removal 1")
     );
 
+    joystick.back().onTrue(
+      rollers.seatCoral()
+    );
+
     joystick.rightBumper().or(joystick.start()).and(()->!rollers.isSeated()).debounce(0.2, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.CENTER, false));
     // joystick.a().onTrue(
     //   Commands.sequence(
@@ -225,8 +229,11 @@ public class RobotContainer {
       ).withName("Algae collect")
     );
 
+
+    joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
+
     joystick.rightTrigger().toggleOnTrue(
-      algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle)
+      algaePivot.setAngleCommand(AlgaePivotConstants.kOutAngle)
       .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kOuttakeVoltage))
       .withName("Algae score")
     );

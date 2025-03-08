@@ -259,6 +259,7 @@ public class Constants {
         public static final Angle kMaxAngle = Degrees.of(95);
 
         public static final Angle kUpAngle = Degrees.of(90);
+        public static final Angle kOutAngle = Degrees.of(80);
         public static final Angle kDownAngle = Degrees.of(20);
         public static final Angle kPositionTolerance = Degrees.of(2);
         private static final Slot0Configs slot0_config = new Slot0Configs()
@@ -292,8 +293,8 @@ public class Constants {
     public static class AlgaeRollerConstants{
         public static final double kThreshold = 600;
         public static final int kLaserCANID = 1;
-        public static final Voltage kIntakeVoltage = Volts.of(-5);
-        public static final Voltage kOuttakeVoltage = Volts.of(3);
+        public static final Voltage kIntakeVoltage = Volts.of(-7);
+        public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final int kMotorID = 28;
         public static final TalonFXSConfiguration kRollerMotorConfigs = new TalonFXSConfiguration()
         .withCurrentLimits(new CurrentLimitsConfigs()
