@@ -4,17 +4,24 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
+
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,12 +34,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlgaePivotConstants;
 import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.CoralIntakeConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
-import frc.robot.commands.MoveEndEffector;
 import frc.robot.commands.AlignToReef.ReefSide;
+import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.AlgaeIntake.AlgaePivot;
 import frc.robot.subsystems.AlgaeIntake.AlgaeRoller;
 import frc.robot.subsystems.Climber.Climber;
@@ -132,7 +140,7 @@ public class RobotContainer {
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
           coralIntake.setRollersVoltage(Volts.of(3.2))),
-        rollers.seatCoral()
+          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
       ).withName("Coral station intake")
     );
 
@@ -205,7 +213,7 @@ public class RobotContainer {
       ).withName("Algae removal 1")
     );
 
-    joystick.back().onTrue(
+    joystick.back().and(()->!rollers.isSeated()).onTrue(
       rollers.seatCoral()
     );
 
@@ -256,9 +264,15 @@ public class RobotContainer {
     NamedCommands.registerCommand("intake", 
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
-          coralIntake.setRollersVoltage(Volts.of(3.2))),
-        rollers.seatCoral()
+          coralIntake.setRollersVoltage(CoralIntakeConstants.kIntakeVoltage)),
+        rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
       ).withTimeout(4));
+    NamedCommands.registerCommand("intake with current check",
+      Commands.parallel(
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")), 
+        coralIntake.setRollersVoltage(CoralIntakeConstants.kIntakeVoltage)
+      ).until(coralIntake::currentAboveTreshold)
+    );
     // joystick.y().onTrue(
     //   Commands.parallel(
     //     climber.setWinchPosition(ClimberConstants.kUpAngle),

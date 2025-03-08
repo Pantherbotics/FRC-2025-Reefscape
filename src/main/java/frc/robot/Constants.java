@@ -99,7 +99,7 @@ public class Constants {
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
         public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(17), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
         public static final double kDistToleranceMeters = Units.inchesToMeters(1.75);
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1.75, 1.75, 7);
@@ -231,10 +231,11 @@ public class Constants {
     }
 
     public static class CoralIntakeConstants{
+        public static final double kCurrentTreshold = 13;
         public static final int kServoID = 0;
         public static final int kRollersMotorID = 25;
         public static final double kPositionTolerance = 0.05;
-        public static final Voltage kIntakeVoltage = Volts.of(3.4);
+        public static final Voltage kIntakeVoltage = Volts.of(3.2);
         public static final TalonFXSConfiguration kMotorConfig = new TalonFXSConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(40)

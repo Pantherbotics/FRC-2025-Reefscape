@@ -34,6 +34,12 @@ public class CoralIntake extends SubsystemBase {
     );
   }
 
+  public boolean currentAboveTreshold(){
+    return m_RollersMotor.getStatorCurrent().getValueAsDouble() > CoralIntakeConstants.kCurrentTreshold;
+  }
+
+  
+
   public Command setServoPosition(double position) {
     return this.runOnce(() -> {
       goal = MathUtil.clamp(position, 0.0, 1.0);
