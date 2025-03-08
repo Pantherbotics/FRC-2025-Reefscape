@@ -79,8 +79,8 @@ public class Constants {
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
 
         public static final ProfiledPIDController kXController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(10), 2)); // Forward/back
-        public static final ProfiledPIDController kYController = new ProfiledPIDController(15, 0, 0.3, new Constraints(Units.feetToMeters(10), 2)); // Left/right
-        public static final ProfiledPIDController kHeadingController = new ProfiledPIDController(30, 0, 0, new Constraints(Units.rotationsToRadians(3), 6)); // rotation
+        public static final ProfiledPIDController kYController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(10), 2)); // Left/right
+        public static final ProfiledPIDController kHeadingController = new ProfiledPIDController(7, 0, 0, new Constraints(Units.rotationsToRadians(3), 6)); // rotation
 
         public static final PIDConstants kTranslationConstants = new PIDConstants(8, 0.3);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
@@ -101,8 +101,8 @@ public class Constants {
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
-        public static final double kDistToleranceMeters = Units.inchesToMeters(2);
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 7);
+        public static final double kDistToleranceMeters = Units.inchesToMeters(1.75);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1.75, 1.75, 7);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 1);
     
     };

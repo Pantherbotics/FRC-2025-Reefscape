@@ -307,7 +307,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             this.runEnd(
                 ()->this.setControl(m_pathApplyRobotSpeeds.withSpeeds(rotationSpeeds)),
                 ()->this.setControl(m_pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds()))
-            ).raceWith(Commands.waitSeconds(5))
+            ).raceWith(Commands.waitSeconds(15))
         ).andThen(Commands.waitSeconds(1)
         ).andThen(
             this.runOnce(()->{

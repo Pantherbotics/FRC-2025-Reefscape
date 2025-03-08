@@ -206,7 +206,6 @@ public class RobotContainer {
     );
 
     joystick.rightBumper().or(joystick.start()).and(()->!rollers.isSeated()).debounce(0.2, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.CENTER, false));
-
     // joystick.a().onTrue(
     //   Commands.sequence(
     //     new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))

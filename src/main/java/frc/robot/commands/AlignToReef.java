@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
@@ -77,6 +78,10 @@ public class AlignToReef extends Command {
     }
     goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(transform);
     pub.set(goalPose);
+    xController.setGoal(0);
+    yController.setGoal(0);
+    headingController.setGoal(0);
+    
   }
 
   private Pose2d getClosestTagPose(Pose2d robotPose){
@@ -101,6 +106,7 @@ public class AlignToReef extends Command {
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSpeeds(speeds)
     );
+    SmartDashboard.putNumber("setpoint", xController.getSetpoint().velocity);
   }
 
   @Override
