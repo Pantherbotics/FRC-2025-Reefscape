@@ -6,6 +6,7 @@ package frc.robot.subsystems.EndEffector;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
@@ -75,6 +76,10 @@ public class Rollers extends SubsystemBase {
       ()->m_rollersMotor.getEncoder().setPosition(wheelAngle.get().plus(Degrees.of(90)).in(Rotations) * RollerConstants.kMotorToWheelRatio),
       () -> m_controller.setReference(wheelAngle.get().plus(Degrees.of(90)).in(Rotations) * RollerConstants.kMotorToWheelRatio, ControlType.kPosition)
     );
+  }
+
+  public double rollerVoltage(){
+    return m_rollersMotor.get();
   }
 
   public Command smartOuttake(Voltage outtakeVoltage, Time outtakeSeconds){

@@ -98,25 +98,38 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "To source"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake with current check"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "To source"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.3
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
                         "pathName": "to top left"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align right"
                       }
                     }
                   ]
@@ -142,12 +155,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "align right"
           }
         },
         {
