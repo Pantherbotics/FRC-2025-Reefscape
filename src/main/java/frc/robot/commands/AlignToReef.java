@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
@@ -56,6 +57,9 @@ public class AlignToReef extends Command {
     this.drivetrain = drivetrain;
     this.reefSide = side;
     this.endWhenClose = endWhenClose;
+
+    System.out.println("MaxAccel: "+xController.getConstraints().maxAcceleration);
+    System.out.println("MaxVelocity: "+xController.getConstraints().maxVelocity);
     addRequirements(drivetrain);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     xController.setGoal(0);
@@ -78,10 +82,6 @@ public class AlignToReef extends Command {
     }
     goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(transform);
     pub.set(goalPose);
-    xController.setGoal(0);
-    yController.setGoal(0);
-    headingController.setGoal(0);
-    
   }
 
   private Pose2d getClosestTagPose(Pose2d robotPose){
@@ -96,9 +96,10 @@ public class AlignToReef extends Command {
 
   @Override
   public void execute() {
-    Transform2d toGoal = goalPose.minus(drivetrain.getState().Pose);drivetrain.getState().Pose.minus(goalPose);
+    Transform2d toGoal = goalPose.minus(drivetrain.getState().Pose);
     ChassisSpeeds speeds = new ChassisSpeeds(
-      xController.calculate(-toGoal.getX()),
+      // xController.calculate(-toGoal.getX()),
+      xController.calculate(-toGoal.getX(), new State(1,0), xController.getConstraints()),
       yController.calculate(-toGoal.getY()),
       headingController.calculate(-toGoal.getRotation().getRadians())
     );
