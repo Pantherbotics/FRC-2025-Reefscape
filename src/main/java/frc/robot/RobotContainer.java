@@ -199,14 +199,14 @@ public class RobotContainer {
     joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.LEFT, false).withName("Right Align"));
 
     // Algae commands
-    joystick.rightBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.rightBumper().and(()->!rollers.isSeated() && !rollers.isSeating()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
       ).withName("Algae removal 2")
     );
 
-    joystick.start().and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.start().and(()->!rollers.isSeated() && !rollers.isSeating()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)

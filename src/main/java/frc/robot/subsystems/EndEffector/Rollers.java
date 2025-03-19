@@ -36,6 +36,7 @@ public class Rollers extends SubsystemBase {
   private final SparkFlex m_rollersMotor = new SparkFlex(RollerConstants.kRollersMotorID, MotorType.kBrushless);
   private final SparkClosedLoopController m_controller = m_rollersMotor.getClosedLoopController();
   private boolean isSeated = false;
+  private boolean isSeating = false;
 
   public Rollers() {
     m_rollersMotor.configure(RollerConstants.kMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -97,14 +98,20 @@ public class Rollers extends SubsystemBase {
   }
 
   public Command seatCoral(){
-    return this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!this.hasCoral())
+    return Commands.runOnce(()->isSeating=true)
+    .alongWith(this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!this.hasCoral()))
     .andThen(this.setRollerSpeed(RollerConstants.kBackVoltage).until(this::hasCoral))
     .andThen(Commands.waitSeconds(0.1))
-    .andThen(this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true)));
+    .andThen(this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true)))
+    .andThen(Commands.runOnce(()->isSeating=false));
   }
 
   public boolean isSeated(){
     return Utils.isSimulation()?true:isSeated;
+  }
+
+  public boolean isSeating(){
+    return isSeating;
   }
 
   @Override
@@ -113,4 +120,5 @@ public class Rollers extends SubsystemBase {
     SmartDashboard.putBoolean("Has coral?", hasCoral());
     SmartDashboard.putBoolean("isSeated", isSeated);
   } 
+
 }
