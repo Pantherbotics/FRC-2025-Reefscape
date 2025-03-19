@@ -13,15 +13,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "middle"
+                        "name": "zero elevator"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "align center"
+                        "name": "remove algae 2"
                       }
                     }
                   ]
@@ -32,15 +32,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "path",
                       "data": {
-                        "name": "zero elevator"
+                        "pathName": "start to I-J algae"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "remove algae 1"
+                        "name": "align center"
                       }
                     }
                   ]
@@ -53,25 +53,6 @@
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Move back"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "align right"
-                      }
-                    }
-                  ]
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -90,6 +71,25 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "I-J algae to J"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align right"
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -98,6 +98,88 @@
           "type": "named",
           "data": {
             "name": "shoot coral"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "J to source"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake with current check"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "position L3"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "source to I"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align left"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot coral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I to source"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "source to J"
           }
         }
       ]

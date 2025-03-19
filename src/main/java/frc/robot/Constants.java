@@ -7,10 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
@@ -32,7 +29,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.signals.AdvancedHallSupportValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -97,13 +93,13 @@ public class Constants {
 
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
-        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
-        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(18), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
+        public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(17), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
 
         public static final double kDistToleranceMeters = Units.inchesToMeters(1.75);
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1.75, 1.75, 7);
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 1);
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1, 1, 7);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.15, 0.15, 1);
     
     };
 
@@ -216,15 +212,17 @@ public class Constants {
         public static final Voltage kBackVoltage = Volts.of(-0.8);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final Time kOuttakeTime = Seconds.of(0.5);
+        public static final Voltage kAlgaeRemovalVoltage = Volts.of(7);
 
 
         public static final SparkBaseConfig kMotorConfig = new SparkFlexConfig()
             .apply(new ClosedLoopConfig()
                 .pidf(
-                    2, 
+                    3, 
                     0, 
-                    0, 
-                    0.5)
+                    0.5, 
+                    0.19
+                    )
                 )
             .smartCurrentLimit(50)
             .idleMode(IdleMode.kBrake);

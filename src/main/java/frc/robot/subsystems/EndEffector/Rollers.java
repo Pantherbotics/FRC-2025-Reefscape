@@ -99,7 +99,7 @@ public class Rollers extends SubsystemBase {
   public Command seatCoral(){
     return this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!this.hasCoral())
     .andThen(this.setRollerSpeed(RollerConstants.kBackVoltage).until(this::hasCoral))
-    .andThen(Commands.waitSeconds(0.05))
+    .andThen(Commands.waitSeconds(0.1))
     .andThen(this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true)));
   }
 

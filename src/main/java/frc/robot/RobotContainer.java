@@ -199,14 +199,14 @@ public class RobotContainer {
     joystick.leftBumper().or(joystick.back()).and(rollers::isSeated).debounce(0.13, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.LEFT, false).withName("Right Align"));
 
     // Algae commands
-    joystick.rightBumper().debounce(0.08, DebounceType.kRising).and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.rightBumper().and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
       ).withName("Algae removal 2")
     );
 
-    joystick.start().debounce(0.08, DebounceType.kRising).and(()->!rollers.hasCoral()).toggleOnTrue(
+    joystick.start().and(()->!rollers.hasCoral()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")),
         rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage)
@@ -237,6 +237,10 @@ public class RobotContainer {
       ).withName("Algae collect")
     );
 
+    joystick.povLeft().toggleOnTrue(
+      rollers.setRollerPosition(()->Rotations.of((joystick.getRightTriggerAxis()-0.5)*0.5))
+    );
+
 
     joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
 
@@ -257,9 +261,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
-    NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.5)));
-    NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(Volts.of(5))).withTimeout(Seconds.of(2.5)));
-    NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(Volts.of(5))).withTimeout(Seconds.of(2.5)));
+    NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.3)));
+    NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
+    NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
     NamedCommands.registerCommand("intake", 
       Commands.race(

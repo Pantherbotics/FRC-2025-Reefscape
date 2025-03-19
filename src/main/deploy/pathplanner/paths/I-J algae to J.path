@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.235064102564102,
-        "y": 5.418269230769231
+        "x": 5.131858974358974,
+        "y": 5.180897435897436
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.485036021805912,
-        "y": 5.799397975251868
+        "x": 5.3898717948717945,
+        "y": 5.676282051282052
       },
       "isLocked": false,
-      "linkedName": "top left"
+      "linkedName": "I-J algae"
     },
     {
       "anchor": {
-        "x": 1.199743589743589,
-        "y": 7.028269230769231
+        "x": 4.987371794871794,
+        "y": 5.2325
       },
       "prevControl": {
-        "x": 3.0015500072664274,
-        "y": 6.356261934494628
+        "x": 5.193782051282051,
+        "y": 5.934294871794872
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "source"
+      "linkedName": "J"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.222168633636116
+    "rotation": -120.34324888423961
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -120.71890426402913
+    "rotation": -119.59194922422041
   },
   "useDefaultConstraints": true
 }
