@@ -6,6 +6,12 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,9 +68,6 @@ public class AlignToReef extends Command {
     System.out.println("MaxVelocity: "+xController.getConstraints().maxVelocity);
     addRequirements(drivetrain);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
-    xController.setGoal(0);
-    yController.setGoal(0);
-    headingController.setGoal(0);
   }
 
   @Override
@@ -80,8 +83,18 @@ public class AlignToReef extends Command {
         this.transform = VisionConstants.kCenterTransform;
         break;
     }
-    goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(transform);
+    Pose2d robotPose = drivetrain.getState().Pose;
+    ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
+    goalPose = getClosestTagPose(robotPose).plus(transform);
     pub.set(goalPose);
+    xController.setGoal(goalPose.getX());
+    yController.setGoal(goalPose.getY());
+    headingController.setGoal(goalPose.getRotation().getRadians());
+    xController.reset(new State(robotPose.getX(), fieldSpeeds.vxMetersPerSecond));
+    yController.reset(new State(robotPose.getY(), fieldSpeeds.vyMetersPerSecond));
+    headingController.reset(new State(robotPose.getRotation().getRadians(), fieldSpeeds.omegaRadiansPerSecond));
+
+
   }
 
   private Pose2d getClosestTagPose(Pose2d robotPose){
@@ -96,16 +109,15 @@ public class AlignToReef extends Command {
 
   @Override
   public void execute() {
-    Transform2d toGoal = goalPose.minus(drivetrain.getState().Pose);
-    ChassisSpeeds speeds = new ChassisSpeeds(
-      // xController.calculate(-toGoal.getX()),
-      xController.calculate(-toGoal.getX(), new State(1,0), xController.getConstraints()),
-      yController.calculate(-toGoal.getY()),
-      headingController.calculate(-toGoal.getRotation().getRadians())
-    );
-    drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds()
+    Pose2d robotPose = drivetrain.getState().Pose;
+
+    drivetrain.setControl(new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
-      .withSpeeds(speeds)
+      .withVelocityX(-xController.calculate(robotPose.getX()))
+      .withVelocityY(-yController.calculate(robotPose.getY()))
+      .withRotationalRate(headingController.calculate(robotPose.getRotation().getRadians()))
+      .withDeadband(InchesPerSecond.of(10))
+      .withRotationalDeadband(DegreesPerSecond.of(15))
     );
     SmartDashboard.putNumber("setpoint", xController.getSetpoint().velocity);
   }
