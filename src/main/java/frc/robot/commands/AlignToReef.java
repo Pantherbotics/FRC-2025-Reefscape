@@ -8,14 +8,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -63,9 +61,6 @@ public class AlignToReef extends Command {
     this.drivetrain = drivetrain;
     this.reefSide = side;
     this.endWhenClose = endWhenClose;
-
-    System.out.println("MaxAccel: "+xController.getConstraints().maxAcceleration);
-    System.out.println("MaxVelocity: "+xController.getConstraints().maxVelocity);
     addRequirements(drivetrain);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -93,8 +88,6 @@ public class AlignToReef extends Command {
     xController.reset(new State(robotPose.getX(), fieldSpeeds.vxMetersPerSecond));
     yController.reset(new State(robotPose.getY(), fieldSpeeds.vyMetersPerSecond));
     headingController.reset(new State(robotPose.getRotation().getRadians(), fieldSpeeds.omegaRadiansPerSecond));
-
-
   }
 
   private Pose2d getClosestTagPose(Pose2d robotPose){
@@ -113,11 +106,12 @@ public class AlignToReef extends Command {
 
     drivetrain.setControl(new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
-      .withVelocityX(-xController.calculate(robotPose.getX()))
-      .withVelocityY(-yController.calculate(robotPose.getY()))
+      .withVelocityX(xController.calculate(robotPose.getX()))
+      .withVelocityY(yController.calculate(robotPose.getY()))
       .withRotationalRate(headingController.calculate(robotPose.getRotation().getRadians()))
       .withDeadband(InchesPerSecond.of(10))
       .withRotationalDeadband(DegreesPerSecond.of(15))
+      .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
     );
     SmartDashboard.putNumber("setpoint", xController.getSetpoint().velocity);
   }

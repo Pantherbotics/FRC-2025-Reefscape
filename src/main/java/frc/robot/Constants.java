@@ -74,9 +74,9 @@ public class Constants {
         public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
 
-        public static final ProfiledPIDController kXController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(15), 5)); // Forward/back
-        public static final ProfiledPIDController kYController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(15), 5)); // Left/right
-        public static final ProfiledPIDController kHeadingController = new ProfiledPIDController(7, 0, 0, new Constraints(Units.rotationsToRadians(3), 6)); // rotation
+        public static final ProfiledPIDController kXController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(15), 6)); // Forward/back
+        public static final ProfiledPIDController kYController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(15), 6)); // Left/right
+        public static final ProfiledPIDController kHeadingController = new ProfiledPIDController(7, 0, 0, new Constraints(Units.rotationsToRadians(3), Units.rotationsToRadians(4))); // rotation
 
         public static final PIDConstants kTranslationConstants = new PIDConstants(8, 0.3);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
