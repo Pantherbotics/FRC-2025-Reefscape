@@ -82,7 +82,7 @@ public class AlignToReef extends Command {
 
     ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
     
-    goalPose = getClosestTagPose(drivetrain.getState().Pose).plus(transform);
+    goalPose = getClosestTagPose(robotPose).plus(transform);
 
     pub.set(goalPose);
     xController.setGoal(goalPose.getX());
@@ -111,15 +111,16 @@ public class AlignToReef extends Command {
     Transform2d toGoal = goalPose.minus(drivetrain.getState().Pose);
     ChassisSpeeds speeds = new ChassisSpeeds(
       // xController.calculate(-toGoal.getX()),
-      xController.calculate(-toGoal.getX(), new State(1,0), xController.getConstraints()),
+      xController.calculate(-toGoal.getX()),
       yController.calculate(-toGoal.getY()),
       headingController.calculate(-toGoal.getRotation().getRadians())
+      
     );
  
 
     drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds()
-      .withSpeeds(speeds)
-      .withDriveRequestType(DriveRequestType.Velocity)
+    .withDriveRequestType(DriveRequestType.Velocity)
+    .withSpeeds(speeds)
       // Below does not exist in ApplyRobotSpeeds()
       // .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
     );
