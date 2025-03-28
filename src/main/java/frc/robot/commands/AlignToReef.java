@@ -6,14 +6,10 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.InchesPerSecond;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -95,6 +91,7 @@ public class AlignToReef extends Command {
     xController.reset(new State(robotPose.getX(), fieldSpeeds.vxMetersPerSecond));
     yController.reset(new State(robotPose.getY(), fieldSpeeds.vyMetersPerSecond));
     headingController.reset(new State(robotPose.getRotation().getRadians(), fieldSpeeds.omegaRadiansPerSecond));
+ 
   }
 
 
