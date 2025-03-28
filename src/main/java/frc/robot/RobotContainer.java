@@ -55,7 +55,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.Visualizer;
 
 public class RobotContainer {
-  private final CommandXboxController joystick = new CommandXboxController(5);
+  private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final Elevator elevator = new Elevator();
   private final Pivot pivot = new Pivot();
