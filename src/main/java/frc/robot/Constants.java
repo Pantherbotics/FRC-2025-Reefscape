@@ -208,7 +208,7 @@ public class Constants {
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
         public static final Voltage kIntakeVoltage = Volts.of(3.3);
-        public static final Voltage kSeatVoltage = Volts.of(1.1);
+        public static final Voltage kSeatVoltage = Volts.of(5);
         public static final Voltage kBackVoltage = Volts.of(-0.8);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final Time kOuttakeTime = Seconds.of(0.5);

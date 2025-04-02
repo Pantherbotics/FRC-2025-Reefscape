@@ -141,7 +141,7 @@ public class RobotContainer {
       Commands.race(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
           coralIntake.setRollersVoltage(Volts.of(3.2))),
-          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
+          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.smartIntake())
       ).withName("Coral station intake")
     );
 

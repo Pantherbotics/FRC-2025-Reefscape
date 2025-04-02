@@ -16,12 +16,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.RollerConstants;
 
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -79,8 +81,15 @@ public class Rollers extends SubsystemBase {
     );
   }
 
-  public double rollerVoltage(){
-    return m_rollersMotor.get();
+
+  public Command smartIntake(){
+    return 
+      Commands.runOnce(()->isSeating=true)
+        .andThen(this.setRollerSpeed(RollerConstants.kSeatVoltage))
+        .andThen(Commands.waitUntil(()->this.hasCoral()))
+        .andThen(Commands.waitUntil(()-> m_rollersMotor.getOutputCurrent() > 40))
+        .andThen(this.stopRollers())
+      ;
   }
 
   public Command smartOuttake(Voltage outtakeVoltage, Time outtakeSeconds){
@@ -114,11 +123,18 @@ public class Rollers extends SubsystemBase {
     return isSeating;
   }
 
+
+  // Algae stuff
+
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("roller pos", Units.rotationsToDegrees(m_rollersMotor.getEncoder().getPosition()));
     SmartDashboard.putBoolean("Has coral?", hasCoral());
     SmartDashboard.putBoolean("isSeated", isSeated);
+    SignalLogger.writeDouble("roller current", m_rollersMotor.getOutputCurrent());
+    SmartDashboard.putNumber("roller current", m_rollersMotor.getOutputCurrent());
   } 
+
 
 }
