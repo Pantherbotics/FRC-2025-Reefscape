@@ -26,6 +26,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -242,15 +243,22 @@ public class RobotContainer {
     );
 
 
-    joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
-
+    
     joystick.rightTrigger().toggleOnTrue(
       algaePivot.setAngleCommand(AlgaePivotConstants.kOutAngle)
       .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kOuttakeVoltage))
       .withName("Algae score")
-    );
-
+      );
+      
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
+      
+    joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
+    joystick.leftStick().and(joystick.rightStick()).debounce(1,DebounceType.kRising).onTrue(
+      drivetrain.superMode()
+    ).onTrue(
+      Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getPigeon2().getAccelerationX().getValueAsDouble(), drivetrain.getPigeon2().getAccelerationY().getValueAsDouble())/2.83))
+      // Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getState().Speeds.vxMetersPerSecond, drivetrain.getState().Speeds.vyMetersPerSecond)/5))
+    );
 
     joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
     joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
