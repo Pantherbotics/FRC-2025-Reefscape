@@ -82,12 +82,13 @@ public class Rollers extends SubsystemBase {
   }
 
   public Command smartIntake(){
-    return 
+    return
       Commands.runOnce(()->isSeating=true)
         .andThen(this.setRollerSpeed(RollerConstants.kSeatVoltage))
         .andThen(Commands.waitUntil(()->this.hasCoral()))
         .andThen(Commands.waitUntil(()-> m_rollersMotor.getOutputCurrent() > 40))
-        .andThen(this.stopRollers())
+        .andThen(this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true)))
+        .andThen(Commands.runOnce(()->isSeating=false))
       ;
   }
 
@@ -101,7 +102,7 @@ public class Rollers extends SubsystemBase {
             this.setRollerSpeed(RollerConstants.kSeatVoltage).until(()->!hasCoral()),
             this.stopRollers().alongWith(Commands.runOnce(()->isSeated = true))
           ), 
-          this.stopRollers(), 
+         this.stopRollers(), 
           ()->m_rollersMotor.getOutputCurrent()>RollerConstants.kMaxCurrent));
   }
 
