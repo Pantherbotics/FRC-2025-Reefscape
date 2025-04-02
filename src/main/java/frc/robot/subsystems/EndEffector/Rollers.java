@@ -81,7 +81,6 @@ public class Rollers extends SubsystemBase {
     );
   }
 
-
   public Command smartIntake(){
     return 
       Commands.runOnce(()->isSeating=true)
