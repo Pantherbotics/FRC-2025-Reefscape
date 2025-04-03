@@ -124,6 +124,9 @@ public class Rollers extends SubsystemBase {
   }
 
 
+  public boolean isCurrentSpike(){
+    return m_rollersMotor.getOutputCurrent() > 40;
+  }
   // Algae stuff
 
 
@@ -134,6 +137,7 @@ public class Rollers extends SubsystemBase {
     SmartDashboard.putBoolean("isSeated", isSeated);
     SignalLogger.writeDouble("roller current", m_rollersMotor.getOutputCurrent());
     SmartDashboard.putNumber("roller current", m_rollersMotor.getOutputCurrent());
+    SmartDashboard.putBoolean("isCurrentHit", isCurrentSpike());
   } 
 
 
