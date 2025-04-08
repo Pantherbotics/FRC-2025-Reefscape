@@ -82,7 +82,7 @@ import java.util.List;
              visionSim.addAprilTags(VisionConstants.kAprilTagLayout);
              // Create simulated camera properties. These can be set to mimic your actual camera.
              var cameraProp = new SimCameraProperties();
-             cameraProp.setCalibration(1280, 800, Rotation2d.fromDegrees(72));
+             cameraProp.setCalibration(1280, 800, Rotation2d.fromDegrees(90));
              cameraProp.setCalibError(0.4, 0.10);
              cameraProp.setFPS(60);
              cameraProp.setAvgLatencyMs(30);

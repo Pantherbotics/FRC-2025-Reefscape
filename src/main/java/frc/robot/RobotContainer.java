@@ -92,7 +92,7 @@ public class RobotContainer {
     );
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
-    rollers.setDefaultCommand(rollers.setRollerSpeed(Volts.zero()));
+    rollers.setDefaultCommand(rollers.setRollerPosition(pivot::pivotAngle));
     coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()).raceWith(Commands.waitSeconds(0.1)).andThen(coralIntake.disableServo()));
     algaeRoller.setDefaultCommand(algaeRoller.setVoltage(Volts.of(0)));
     algaePivot.setDefaultCommand(algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle).repeatedly());
