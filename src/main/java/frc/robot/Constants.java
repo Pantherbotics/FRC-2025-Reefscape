@@ -250,7 +250,7 @@ public class Constants {
                 .withVoltageOpenLoopRampPeriod(0.5)
             );
     }
-
+    //newstuff
     public static class AlgaePivotConstants {
         public static final double kPivotRatio = (9d/1d) * (50d/24d) * (48d/ 12d);
         public static final int kMotorID = 27;
