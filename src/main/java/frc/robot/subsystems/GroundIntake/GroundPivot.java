@@ -25,10 +25,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
-import frc.robot.Constants.AlgaePivotConstants;
+import frc.robot.Constants.GroundPivotConstants;
 
 public class GroundPivot extends SubsystemBase {
-  private final TalonFX m_pivotMotor = new TalonFX(AlgaePivotConstants.kMotorID);
+  private final TalonFX m_pivotMotor = new TalonFX(GroundPivotConstants.kMotorID);
   private final MotionMagicExpoVoltage m_MotionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   private Angle m_goalAngle = Degrees.of(90);
 
@@ -39,7 +39,7 @@ public class GroundPivot extends SubsystemBase {
     new Mechanism(this::setVolts, null, this));
 
   public GroundPivot() {
-    m_pivotMotor.getConfigurator().apply(AlgaePivotConstants.kPivotConstants);
+    m_pivotMotor.getConfigurator().apply(GroundPivotConstants.kPivotConstants);
     m_pivotMotor.setPosition(Degrees.of(90));
     SmartDashboard.putData(this);
 
@@ -57,7 +57,7 @@ public class GroundPivot extends SubsystemBase {
 
   public Command setAngleCommand(Angle angle){
     return this.runOnce(()->{
-      m_goalAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), AlgaePivotConstants.kMinAngle.in(Degrees), AlgaePivotConstants.kMaxAngle.in(Degrees)));
+      m_goalAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), GroundPivotConstants.kMinAngle.in(Degrees), GroundPivotConstants.kMaxAngle.in(Degrees)));
       m_pivotMotor.setControl(m_MotionMagicReq.withPosition(angle));
     }).andThen(Commands.idle(this)).until(this::isAtGoal);
   }
@@ -74,7 +74,7 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public boolean isAtGoal(){
-    return m_pivotMotor.getPosition().getValue().isNear(m_goalAngle, AlgaePivotConstants.kPositionTolerance);
+    return m_pivotMotor.getPosition().getValue().isNear(m_goalAngle, GroundPivotConstants.kPositionTolerance);
   }
   public void meaningOfLife(){}
 

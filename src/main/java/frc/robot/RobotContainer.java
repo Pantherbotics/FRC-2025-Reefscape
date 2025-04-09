@@ -32,9 +32,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.AlgaePivotConstants;
+import frc.robot.Constants.GroundPivotConstants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.GroundIntakeRollerConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
@@ -47,7 +49,9 @@ import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.Pivot;
 import frc.robot.subsystems.EndEffector.Rollers;
+import frc.robot.subsystems.GroundIntake.GroundIntakeRollers;
 import frc.robot.subsystems.GroundIntake.GroundPivot;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.Visualizer;
 
@@ -62,9 +66,8 @@ public class RobotContainer {
   private final GroundPivot groundPivot = new GroundPivot();
   private final Vision vision = new Vision();
   public final Visualizer visualizer = new Visualizer(pivot, elevator, groundPivot, climber);
-
-
-
+  private final Indexer indexer = new Indexer();
+  private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -87,7 +90,9 @@ public class RobotContainer {
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerPosition(pivot::pivotAngle));
-    groundPivot.setDefaultCommand(groundPivot.setAngleCommand(AlgaePivotConstants.kUpAngle).repeatedly());
+    groundPivot.setDefaultCommand(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).repeatedly());
+    groundIntakeRollers.setDefaultCommand(groundIntakeRollers.setVoltage(0));
+    indexer.setDefaultCommand(indexer.setVoltage(0));
 
     configureBindings();
 
@@ -130,10 +135,15 @@ public class RobotContainer {
     
     // Intake command
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
-      Commands.race(
+      Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
-          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.smartIntake())
-      ).withName("Coral station intake")
+        Commands.parallel(
+          groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
+          indexer.setVoltage(IndexerConstants.kInVoltage),
+          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
+        )
+      ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
+      .andThen(rollers.seatCoral())
     );
     
     // L3 commands

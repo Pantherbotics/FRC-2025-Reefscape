@@ -228,7 +228,26 @@ public class Constants {
             .smartCurrentLimit(50)
             .idleMode(IdleMode.kBrake);
     }
-
+    public static class IndexerConstants{
+        public static final int kMotorID = -1;
+        public static final double kInVoltage = 8;
+        public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(-1)
+                .withSupplyCurrentLimit(-1)
+            )
+        ;
+    }
+    public static class GroundIntakeRollerConstants {
+        public static final int kMotorID = -2;
+        public static final double kinVoltage = 8;
+        public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(-1)
+                .withSupplyCurrentLimit(-1)
+            )
+        ;
+    }
     public static class CoralIntakeConstants{
         public static final double kCurrentTreshold = 13;
         public static final int kServoID = 0;
@@ -251,8 +270,8 @@ public class Constants {
             );
     }
     
-    public static class AlgaePivotConstants {
-        public static final double kPivotRatio = (9d/1d) * (50d/24d) * (48d/ 12d);
+    public static class GroundPivotConstants {
+        public static final double kPivotRatio = (15d/1d) * (50d/22d) * (48d/ 12d);
         public static final int kMotorID = 27;
 
         public static final Angle kMinAngle = Degrees.of(-10);
@@ -290,23 +309,6 @@ public class Constants {
                 .withSensorToMechanismRatio(kPivotRatio));
     }
 
-    public static class AlgaeRollerConstants{
-        public static final double kThreshold = 600;
-        public static final int kLaserCANID = 1;
-        public static final Voltage kIntakeVoltage = Volts.of(-7);
-        public static final Voltage kOuttakeVoltage = Volts.of(4);
-        public static final int kMotorID = 28;
-        public static final TalonFXSConfiguration kRollerMotorConfigs = new TalonFXSConfiguration()
-        .withCurrentLimits(new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(40)
-            .withSupplyCurrentLimit(80))
-        .withCommutation(new CommutationConfigs()
-            .withMotorArrangement(MotorArrangementValue.Minion_JST)
-            .withAdvancedHallSupport(AdvancedHallSupportValue.Enabled))
-        .withMotorOutput(new MotorOutputConfigs()
-            .withInverted(InvertedValue.CounterClockwise_Positive)
-            .withNeutralMode(NeutralModeValue.Brake));
-    }
 
     public static class ClimberConstants {
         public static final int kClimberMotorID = 26; // NOT FINAL
@@ -360,7 +362,7 @@ public class Constants {
             EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
             EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-15)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
-            EEStates.put("coral station", new EEState(Inches.of(3), Degrees.of(-24)));
+            EEStates.put("ground intake", new EEState(Inches.of(0), Degrees.of(24)));
             EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));
             EEStates.put("Algae 2", new EEState(Inches.of(31), Degrees.of(-25.5)));
             EEStates.put("Stow", new EEState(Inches.of(0.125), Degrees.of(10)));
