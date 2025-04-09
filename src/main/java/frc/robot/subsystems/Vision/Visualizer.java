@@ -20,10 +20,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructArrayTopic;
-import frc.robot.subsystems.AlgaeIntake.AlgaePivot;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.Pivot;
+import frc.robot.subsystems.GroundIntake.GroundPivot;
 
 /** publishes transformed poses for the articulated model*/
 public class Visualizer {
@@ -36,10 +36,10 @@ public class Visualizer {
 
     private final Pivot m_pivot;
     private final Elevator m_elevator;
-    private final AlgaePivot m_algaePivot;
+    private final GroundPivot m_algaePivot;
     private final Climber m_climber;
 
-    public Visualizer(Pivot pivot, Elevator elevator, AlgaePivot algaePivot, Climber climber){
+    public Visualizer(Pivot pivot, Elevator elevator, GroundPivot algaePivot, Climber climber){
         this.m_pivot = pivot;
         this.m_algaePivot = algaePivot;
         this.m_elevator = elevator;

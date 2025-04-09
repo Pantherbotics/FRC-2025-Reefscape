@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.AlgaeIntake;
+package frc.robot.subsystems.GroundIntake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Second;
@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants.AlgaePivotConstants;
 
-public class AlgaePivot extends SubsystemBase {
+public class GroundPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(AlgaePivotConstants.kMotorID);
   private final MotionMagicExpoVoltage m_MotionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   private Angle m_goalAngle = Degrees.of(90);
@@ -38,7 +38,7 @@ public class AlgaePivot extends SubsystemBase {
     new Config( null, Volts.of(6), null, (state)->SignalLogger.writeString("State", state.toString())),
     new Mechanism(this::setVolts, null, this));
 
-  public AlgaePivot() {
+  public GroundPivot() {
     m_pivotMotor.getConfigurator().apply(AlgaePivotConstants.kPivotConstants);
     m_pivotMotor.setPosition(Degrees.of(90));
     SmartDashboard.putData(this);

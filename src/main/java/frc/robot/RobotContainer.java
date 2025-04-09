@@ -33,25 +33,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlgaePivotConstants;
-import frc.robot.Constants.AlgaeRollerConstants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.CoralIntakeConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
 import frc.robot.commands.AlignToReef;
 import frc.robot.commands.AlignToReef.ReefSide;
 import frc.robot.commands.MoveEndEffector;
-import frc.robot.subsystems.AlgaeIntake.AlgaePivot;
-import frc.robot.subsystems.AlgaeIntake.AlgaeRoller;
 import frc.robot.subsystems.Climber.Climber;
-import frc.robot.subsystems.CoralIntake.CoralIntake;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.Pivot;
 import frc.robot.subsystems.EndEffector.Rollers;
+import frc.robot.subsystems.GroundIntake.GroundPivot;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.Visualizer;
 
@@ -61,13 +57,11 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Pivot pivot = new Pivot();
   private final Rollers rollers = new Rollers();
-  private final CoralIntake coralIntake = new CoralIntake();
   private final Telemetry telemetry = new Telemetry(DrivetrainConstants.kMaxSpeed.in(MetersPerSecond));
   private final Climber climber = new Climber();
-  private final AlgaePivot algaePivot = new AlgaePivot();
-  private final AlgaeRoller algaeRoller = new AlgaeRoller();
+  private final GroundPivot groundPivot = new GroundPivot();
   private final Vision vision = new Vision();
-  public final Visualizer visualizer = new Visualizer(pivot, elevator, algaePivot, climber);
+  public final Visualizer visualizer = new Visualizer(pivot, elevator, groundPivot, climber);
 
 
 
@@ -93,9 +87,7 @@ public class RobotContainer {
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerPosition(pivot::pivotAngle));
-    coralIntake.setDefaultCommand(coralIntake.setRollersVoltage(Volts.zero()).raceWith(Commands.waitSeconds(0.1)).andThen(coralIntake.disableServo()));
-    algaeRoller.setDefaultCommand(algaeRoller.setVoltage(Volts.of(0)));
-    algaePivot.setDefaultCommand(algaePivot.setAngleCommand(AlgaePivotConstants.kUpAngle).repeatedly());
+    groundPivot.setDefaultCommand(groundPivot.setAngleCommand(AlgaePivotConstants.kUpAngle).repeatedly());
 
     configureBindings();
 
@@ -139,8 +131,7 @@ public class RobotContainer {
     // Intake command
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.race(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
-          coralIntake.setRollersVoltage(Volts.of(3.2))),
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.smartIntake())
       ).withName("Coral station intake")
     );
@@ -225,29 +216,10 @@ public class RobotContainer {
     //   
     // );
 
-    joystick.leftTrigger().toggleOnTrue(
-      Commands.sequence(
-        algaePivot.setAngleCommand(AlgaePivotConstants.kDownAngle)
-        .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kIntakeVoltage)
-        )
-        //   .raceWith(algaeRoller.setVoltage(AlgaeRollerConstants.kIntakeVoltage)),
-        // Commands.waitUntil(joystick.leftTrigger().negate()),
-        // Commands.waitUntil(joystick.leftTrigger()),
-        // algaeRoller.setVoltage(Volts.zero())
-      ).withName("Algae collect")
-    );
 
     joystick.povLeft().toggleOnTrue(
       rollers.setRollerPosition(()->Rotations.of((joystick.getRightTriggerAxis()-0.5)*0.5))
     );
-
-
-    
-    joystick.rightTrigger().toggleOnTrue(
-      algaePivot.setAngleCommand(AlgaePivotConstants.kOutAngle)
-      .alongWith(algaeRoller.setVoltage(AlgaeRollerConstants.kOuttakeVoltage))
-      .withName("Algae score")
-      );
       
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
       
@@ -259,8 +231,8 @@ public class RobotContainer {
       // Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getState().Speeds.vxMetersPerSecond, drivetrain.getState().Speeds.vyMetersPerSecond)/5))
     );
 
-    joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).alongWith(coralIntake.setPulseWidth(1050)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
-    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(algaePivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+    joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).raceWith(groundPivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(Degrees.of(80)).repeatedly()));
     joystick.y().whileTrue(climber.setVoltage(Volts.of(12))).onFalse(climber.setVoltage(Volts.zero()));
 // pressing anything that has b() as a joytstick thing also fires this ^
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
@@ -274,15 +246,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
     NamedCommands.registerCommand("intake", 
       Commands.race(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")).andThen(
-          coralIntake.setRollersVoltage(CoralIntakeConstants.kIntakeVoltage)),
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
         rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
       ).withTimeout(4));
     NamedCommands.registerCommand("intake with current check",
       Commands.parallel(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")), 
-        coralIntake.setRollersVoltage(CoralIntakeConstants.kIntakeVoltage)
-      ).until(coralIntake::currentAboveTreshold)
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station"))
+      )
     );
     // joystick.y().onTrue(
     //   Commands.parallel(
