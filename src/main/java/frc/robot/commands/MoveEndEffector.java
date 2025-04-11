@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.RobotStates;
@@ -21,8 +23,8 @@ public class MoveEndEffector extends SequentialCommandGroup {
   public MoveEndEffector(Elevator elevator, Pivot pivot, EEState endState) {
     addCommands(
       new ConditionalCommand(
-        pivot.setAngleCommand(Rotations.of(Math.min(endState.angle.in(Rotations), RobotStates.kMoveAngle.in(Rotations))))
-          .andThen(elevator.setHeightCommand(endState.distance))
+        pivot.setAngleCommand(Degrees.of(Math.min(endState.angle.in(Degrees), RobotStates.kMoveAngle.in(Degrees))))
+          .alongWith(elevator.setHeightCommand(endState.distance))
           .andThen(pivot.setAngleCommand(endState.angle)),
         pivot.setAngleCommand(endState.angle)
           .alongWith(elevator.setHeightCommand(endState.distance)), 
