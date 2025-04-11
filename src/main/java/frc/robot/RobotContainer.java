@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.GroundPivotConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -136,7 +137,7 @@ public class RobotContainer {
     // Intake command
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
           groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
           indexer.setVoltage(IndexerConstants.kInVoltage),
@@ -233,16 +234,18 @@ public class RobotContainer {
       
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
       
-    joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
     joystick.leftStick().and(joystick.rightStick()).debounce(1,DebounceType.kRising).onTrue(
       drivetrain.superMode()
-    ).onTrue(
-      Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getPigeon2().getAccelerationX().getValueAsDouble(), drivetrain.getPigeon2().getAccelerationY().getValueAsDouble())/2.83))
-      // Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getState().Speeds.vxMetersPerSecond, drivetrain.getState().Speeds.vyMetersPerSecond)/5))
-    );
-
-    joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle).raceWith(groundPivot.setAngleCommand(Degrees.of(80)).repeatedly()));
-    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(Degrees.of(80)).repeatedly()));
+      ).onTrue(
+        Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getPigeon2().getAccelerationX().getValueAsDouble(), drivetrain.getPigeon2().getAccelerationY().getValueAsDouble())/2.83))
+        // Commands.run(()->joystick.getHID().setRumble(RumbleType.kBothRumble, Math.hypot(drivetrain.getState().Speeds.vxMetersPerSecond, drivetrain.getState().Speeds.vyMetersPerSecond)/5))
+        );
+        
+    // joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
+    joystick.a().toggleOnTrue(groundPivot.setAngleCommand(Degrees.of(100)).alongWith(pivot.setAngleCommand(Degrees.of(-24))).alongWith(Commands.idle()));
+    joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle))
+      .onTrue(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly().asProxy().withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()));
     joystick.y().whileTrue(climber.setVoltage(Volts.of(12))).onFalse(climber.setVoltage(Volts.zero()));
 // pressing anything that has b() as a joytstick thing also fires this ^
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
@@ -256,12 +259,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
     NamedCommands.registerCommand("intake", 
       Commands.race(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station")),
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
       ).withTimeout(4));
     NamedCommands.registerCommand("intake with current check",
       Commands.parallel(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("coral station"))
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake"))
       )
     );
     // joystick.y().onTrue(

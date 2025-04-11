@@ -208,9 +208,9 @@ public class Constants {
         public static final double kThreshold = 10; // if LaserCAN distance is less than this, then coral is in end effector
         public static final double kMotorToWheelRatio = -(50d/24d) * (45d/15d);
         public static final double kDebounceTime = 0.05;
-        public static final Voltage kIntakeVoltage = Volts.of(3.3);
-        public static final Voltage kSeatVoltage = Volts.of(3);
-        public static final Voltage kBackVoltage = Volts.of(-0.8);
+        public static final Voltage kIntakeVoltage = Volts.of(2.5);
+        public static final Voltage kSeatVoltage = Volts.of(1);
+        public static final Voltage kBackVoltage = Volts.of(-0.5);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final Time kOuttakeTime = Seconds.of(0.5);
         public static final Voltage kAlgaeRemovalVoltage = Volts.of(7);
@@ -229,22 +229,22 @@ public class Constants {
             .idleMode(IdleMode.kBrake);
     }
     public static class IndexerConstants{
-        public static final int kMotorID = -1;
-        public static final double kInVoltage = 8;
+        public static final int kMotorID = 24;
+        public static final double kInVoltage = 4;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(-1)
-                .withSupplyCurrentLimit(-1)
+                .withStatorCurrentLimit(40)
+                .withSupplyCurrentLimit(80)
             )
         ;
     }
     public static class GroundIntakeRollerConstants {
-        public static final int kMotorID = -2;
-        public static final double kinVoltage = 8;
+        public static final int kMotorID = 29;
+        public static final double kinVoltage = -8;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(-1)
-                .withSupplyCurrentLimit(-1)
+                .withStatorCurrentLimit(30)
+                .withSupplyCurrentLimit(80)
             )
         ;
     }
@@ -274,12 +274,12 @@ public class Constants {
         public static final double kPivotRatio = (15d/1d) * (50d/22d) * (48d/ 12d);
         public static final int kMotorID = 27;
 
-        public static final Angle kMinAngle = Degrees.of(-10);
-        public static final Angle kMaxAngle = Degrees.of(95);
+        public static final Angle kMinAngle = Degrees.of(-45 );
+        public static final Angle kMaxAngle = Degrees.of(100);
 
         public static final Angle kUpAngle = Degrees.of(90);
-        public static final Angle kOutAngle = Degrees.of(80);
-        public static final Angle kDownAngle = Degrees.of(20);
+        public static final Angle kOutAngle = Degrees.of(40);
+        public static final Angle kDownAngle = Degrees.of(-45);
         public static final Angle kPositionTolerance = Degrees.of(2);
         private static final Slot0Configs slot0_config = new Slot0Configs()
         .withKP(200)
@@ -293,7 +293,7 @@ public class Constants {
         ;
         public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(60)
+                .withStatorCurrentLimit(30)
                 .withSupplyCurrentLimit(90))
             .withSlot0(slot0_config)
             
@@ -302,7 +302,7 @@ public class Constants {
                 .withMotionMagicExpo_kV(slot0_config.kV)
                 .withMotionMagicExpo_kA(slot0_config.kA))
             .withMotorOutput(new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Brake)
+                .withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
@@ -344,12 +344,12 @@ public class Constants {
 
         private static final Distance minUnsafeHeight = Inches.of(16.875);
         private static final Distance maxUnsafeHeight = Inches.of(25.5);
-        private static final Angle maxUnsafeAngle = Degrees.of(14);
+        private static final Angle maxUnsafeAngle = Degrees.of(10);
         public static final Angle kMoveAngle = Degrees.of(0);
 
         private static boolean passesThroughUnsafeZone(Distance startHeight, Distance endHeight) {
             return (startHeight.lt(minUnsafeHeight)&& endHeight.gt(minUnsafeHeight)) ||
-                   (startHeight.lt(maxUnsafeHeight) && endHeight.gt(maxUnsafeHeight));
+                   (startHeight.gt(maxUnsafeHeight) && endHeight.lt(maxUnsafeHeight));
         }
 
         public static boolean needsSafeMovement(Distance startDist, Angle startAngle, EEState endState){
@@ -362,15 +362,10 @@ public class Constants {
             EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
             EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-15)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
-            EEStates.put("ground intake", new EEState(Inches.of(0), Degrees.of(24)));
+            EEStates.put("ground intake", new EEState(Inches.of(0), Degrees.of(30)));
             EEStates.put("Algae 1", new EEState(Inches.of(19), Degrees.of(-30)));
             EEStates.put("Algae 2", new EEState(Inches.of(31), Degrees.of(-25.5)));
             EEStates.put("Stow", new EEState(Inches.of(0.125), Degrees.of(10)));
         }
-
     }
-
-    
-
-
 }
