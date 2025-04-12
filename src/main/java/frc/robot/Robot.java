@@ -8,17 +8,21 @@ import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.RobotStates;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Timer loopTimer;
 
   private final RobotContainer m_robotContainer;
   // private Vision vision;
 
   public Robot() {
+    loopTimer = new Timer();
     CanBridge.runTCP();
 
     // vision = new Vision();
@@ -27,13 +31,20 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
+
   }
 
   @Override
   public void robotPeriodic() {
+    loopTimer.reset();
+    loopTimer.start();
     m_robotContainer.updateVision();
     CommandScheduler.getInstance().run();
     m_robotContainer.visualizer.update();
+
+      loopTimer.stop();
+      double loopTime = loopTimer.get();
+    SmartDashboard.putNumber("Loop time", loopTime);
   }
 
   @Override
