@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems.GroundIntake;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -73,10 +73,13 @@ public class GroundPivot extends SubsystemBase {
     return routine.quasistatic(direction);
   }
 
+  public Command currentZero(){
+    return this.startEnd(()->setVolts(Volts.of(-7)), ()->setVolts(Volts.of(0))).until(()->m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10))).finallyDo(()->m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle));
+  }
+
   public boolean isAtGoal(){
     return m_pivotMotor.getPosition().getValue().isNear(m_goalAngle, GroundPivotConstants.kPositionTolerance);
   }
-  public void meaningOfLife(){}
 
   @Override
   public void periodic() {
