@@ -136,7 +136,7 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
     
     // Intake command
-    
+
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
@@ -146,8 +146,15 @@ public class RobotContainer {
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
-      .andThen(new ScheduleCommand(rollers.seatCoral()))
+      .andThen(
+        new ScheduleCommand(rollers.seatCoral())
+        .alongWith(new ScheduleCommand(Commands.idle(groundPivot).withTimeout(0.5)))
+        .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1)))
+        .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1))))
+      )
     );
+
+    joystick.leftTrigger().whileTrue(indexer.setVoltage(-1));
 
     // L3 commands
     joystick.leftBumper().and(rollers::isSeated).onTrue(
@@ -186,6 +193,8 @@ public class RobotContainer {
       ).withName("L2")
     );
 
+    joystick.rightTrigger().onTrue(groundPivot.currentZero());
+
     joystick.back().and(rollers::isSeated).onTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2"))
@@ -217,9 +226,9 @@ public class RobotContainer {
       ).withName("Algae removal 1")
     );
 
-    joystick.back().and(()->!rollers.isSeated()).onTrue(
-      rollers.seatCoral()
-    );
+    // joystick.back().and(()->!rollers.isSeated()).onTrue(
+    //   rollers.seatCoral()
+    // );
 
     joystick.rightBumper().or(joystick.start()).and(()->!rollers.isSeated()).debounce(0.2, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.CENTER, false));
     // joystick.a().onTrue(
