@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.GroundPivotConstants;
@@ -135,6 +136,7 @@ public class RobotContainer {
     // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
     
     // Intake command
+    
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
@@ -144,9 +146,9 @@ public class RobotContainer {
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
-      .andThen(rollers.seatCoral())
+      .andThen(new ScheduleCommand(rollers.seatCoral()))
     );
-    
+
     // L3 commands
     joystick.leftBumper().and(rollers::isSeated).onTrue(
       Commands.sequence(
