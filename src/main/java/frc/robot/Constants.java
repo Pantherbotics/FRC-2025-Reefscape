@@ -230,7 +230,7 @@ public class Constants {
     }
     public static class IndexerConstants{
         public static final int kMotorID = 24;
-        public static final double kInVoltage = 4;
+        public static final double kInVoltage = 3.6;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(40)
@@ -240,10 +240,10 @@ public class Constants {
     }
     public static class GroundIntakeRollerConstants {
         public static final int kMotorID = 29;
-        public static final double kinVoltage = -8;
+        public static final double kinVoltage = -9;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(30)
+                .withStatorCurrentLimit(40)
                 .withSupplyCurrentLimit(80)
             )
         ;
@@ -306,7 +306,10 @@ public class Constants {
                 .withInverted(InvertedValue.Clockwise_Positive))
             .withFeedback(new FeedbackConfigs()
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                .withSensorToMechanismRatio(kPivotRatio));
+                .withSensorToMechanismRatio(kPivotRatio))
+            .withOpenLoopRamps(new OpenLoopRampsConfigs()
+                .withVoltageOpenLoopRampPeriod(1)
+            );
     }
 
 
