@@ -93,7 +93,7 @@ public class Constants {
 
         // public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
         public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(12.75), Units.inchesToMeters(10), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-25)));
-        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(-6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
+        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(-12.75), Units.inchesToMeters(10), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
         public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(17), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
