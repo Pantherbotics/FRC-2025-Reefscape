@@ -46,16 +46,19 @@ import java.util.List;
  import org.photonvision.simulation.PhotonCameraSim;
  import org.photonvision.simulation.SimCameraProperties;
  import org.photonvision.simulation.VisionSystemSim;
- import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
  
  public class Vision {
 
     private final StructArrayPublisher<Pose3d> estPub = NetworkTableInstance.getDefault().getTable("Pose").getStructArrayTopic("EstimatedPoses", Pose3d.struct).publish();
     private final StructArrayPublisher<Pose3d> leftTargetPub = NetworkTableInstance.getDefault().getTable("Pose").getSubTable("VisionTargets").getStructArrayTopic("left vision targets", Pose3d.struct).publish();
     private final StructArrayPublisher<Pose3d> rightTargetPub = NetworkTableInstance.getDefault().getTable("Pose").getSubTable("VisionTargets").getStructArrayTopic("right vision targets", Pose3d.struct).publish();
+    public static PhotonPipelineResult latestCoralResult = new PhotonPipelineResult();
 
     private final PhotonCamera leftCam = new PhotonCamera(VisionConstants.kLeftCamName);
     private final PhotonCamera rightCam = new PhotonCamera(VisionConstants.kRightCamName);
+    private final PhotonCamera coralCam = new PhotonCamera(VisionConstants.KCoralCamName);
 
      private final PhotonPoseEstimator leftEstimator;
      private final PhotonPoseEstimator rightEstimator;
@@ -216,6 +219,13 @@ import java.util.List;
                  curStdDevs = estStdDevs;
              }
          }
+     }
+
+     public void updateCoralCam(){
+        var results = coralCam.getAllUnreadResults();
+        if (results.size() != 0){
+            latestCoralResult = results.get(0);
+        }
      }
  
      /**

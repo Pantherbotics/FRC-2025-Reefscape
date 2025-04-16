@@ -88,7 +88,8 @@ public class Constants {
     public static class VisionConstants{
         public static final String kLeftCamName = "leftCam";
         public static final String kRightCamName = "rightCam";
-
+        public static final String KCoralCamName = "coralCam";
+        
         public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
         // public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));

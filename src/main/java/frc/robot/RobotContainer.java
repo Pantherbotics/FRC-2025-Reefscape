@@ -107,35 +107,6 @@ public class RobotContainer {
 
   
   private void configureBindings() {
-    
-    // joystick.leftBumper().onTrue(Commands.runOnce(()->SignalLogger.start()));
-    // joystick.rightBumper().onTrue(Commands.runOnce(()->SignalLogger.stop()));
-
-    // // algae pivot
-    // joystick.start().and(joystick.a()).whileTrue(algaePivot.sysIdDynamicCommand(Direction.kForward));
-    // joystick.start().and(joystick.b()).whileTrue(algaePivot.sysIdDynamicCommand(Direction.kReverse));
-    // joystick.back().and(joystick.a()).whileTrue(algaePivot.sysIdQuasistaticCommand(Direction.kForward));
-    // joystick.back().and(joystick.b()).whileTrue(algaePivot.sysIdQuasistaticCommand(Direction.kReverse));
-    
-    // elevator
-    // joystick.start().and(joystick.a()).whileTrue(elevator.sysIdDynamicCommand(Direction.kForward));
-    // joystick.start().and(joystick.b()).whileTrue(elevator.sysIdDynamicCommand(Direction.kReverse));
-    // joystick.back().and(joystick.a()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kForward));
-    // joystick.back().and(joystick.b()).whileTrue(elevator.sysIdQuasistaticCommand(Direction.kReverse));
-
-    // // drivetrain
-    // joystick.start().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    // joystick.start().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    // joystick.back().and(joystick.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    // joystick.back().and(joystick.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-    // // pivot
-    // joystick.start().and(joystick.a()).whileTrue(pivot.sysIdDynamicCommand(Direction.kForward));
-    // joystick.start().and(joystick.b()).whileTrue(pivot.sysIdDynamicCommand(Direction.kReverse));
-    // joystick.back().and(joystick.a()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kForward));
-    // joystick.back().and(joystick.b()).whileTrue(pivot.sysIdQuasistaticCommand(Direction.kReverse));
-    
-    // Intake command
 
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
       Commands.sequence(
@@ -145,7 +116,7 @@ public class RobotContainer {
           indexer.setVoltage(IndexerConstants.kInVoltage),
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
-      ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
+      ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle).beforeStarting(groundPivot.currentZero().unless(groundPivot::hasZeroed))).until(rollers::hasCoral)
       .andThen(
         new ScheduleCommand(rollers.seatCoral())
         .alongWith(new ScheduleCommand(Commands.idle(groundPivot).withTimeout(0.5)))
@@ -192,8 +163,6 @@ public class RobotContainer {
         rollers.stopRollers()
       ).withName("L2")
     );
-
-    joystick.rightTrigger().onTrue(groundPivot.currentZero());
 
     joystick.back().and(rollers::isSeated).onTrue(
       Commands.sequence(
@@ -259,6 +228,7 @@ public class RobotContainer {
     joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()));
     joystick.y().whileTrue(climber.setVoltage(Volts.of(12))).onFalse(climber.setVoltage(Volts.zero()));
 // pressing anything that has b() as a joytstick thing also fires this ^
+
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
@@ -268,16 +238,25 @@ public class RobotContainer {
     NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
     NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
+
+    NamedCommands.registerCommand("zero intake", groundPivot.currentZero().andThen(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)));
+
     NamedCommands.registerCommand("intake", 
-      Commands.race(
+      Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
-        rollers.setRollerSpeed(RollerConstants.kIntakeVoltage).until(rollers::hasCoral).andThen(rollers.seatCoral())
-      ).withTimeout(4));
-    NamedCommands.registerCommand("intake with current check",
-      Commands.parallel(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake"))
+        Commands.parallel(
+          groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
+          indexer.setVoltage(IndexerConstants.kInVoltage),
+          rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
+        )
+      ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
+      .andThen(
+        new ScheduleCommand(rollers.seatCoral())
+        .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1)))
+        .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1))))
       )
     );
+
     // joystick.y().onTrue(
     //   Commands.parallel(
     //     climber.setWinchPosition(ClimberConstants.kUpAngle),
@@ -294,7 +273,7 @@ public class RobotContainer {
 
 
   public void updateVision(){
-
+    vision.updateCoralCam();
     var visionEsts = vision.getEstimatedGlobalPoses();
     for (Optional<EstimatedRobotPose> item: visionEsts){
       item.ifPresent(

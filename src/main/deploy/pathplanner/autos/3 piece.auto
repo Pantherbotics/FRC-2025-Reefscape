@@ -101,7 +101,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -113,7 +113,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intake with current check"
+                  "name": "intake"
                 }
               }
             ]
@@ -124,22 +124,9 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intake"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "position L3"
-                      }
-                    }
-                  ]
+                  "name": "position L3"
                 }
               },
               {

@@ -6,6 +6,7 @@ package frc.robot.subsystems.GroundIntake;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.OunceForce;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -31,6 +32,7 @@ public class GroundPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(GroundPivotConstants.kMotorID);
   private final MotionMagicExpoVoltage m_MotionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   private Angle m_goalAngle = Degrees.of(90);
+  private boolean hasZeroedSinceStart = false;
 
   private final VoltageOut m_voltReq = new VoltageOut(0);
 
@@ -74,11 +76,22 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public Command currentZero(){
-    return this.startEnd(()->setVolts(Volts.of(-7)), ()->setVolts(Volts.of(0))).until(()->m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10))).finallyDo(()->m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle));
+    return this.startEnd(()->setVolts(Volts.of(-7)), ()->setVolts(Volts.of(0)))
+      .until(()->m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10)))
+      .finallyDo(()->{
+        if(m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10))){
+          m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle);
+          hasZeroedSinceStart = true;
+        }
+      });
   }
 
   public boolean isAtGoal(){
     return m_pivotMotor.getPosition().getValue().isNear(m_goalAngle, GroundPivotConstants.kPositionTolerance);
+  }
+
+  public boolean hasZeroed(){
+    return hasZeroedSinceStart;
   }
 
   @Override
