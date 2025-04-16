@@ -22,7 +22,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
@@ -78,6 +77,7 @@ public class AlignToReef extends Command {
         this.transform = VisionConstants.kCenterTransform;
         break;
     }
+
     Pose2d robotPose = drivetrain.getState().Pose;
     ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
     goalPose = getClosestTagPose(robotPose).plus(transform);
@@ -113,7 +113,6 @@ public class AlignToReef extends Command {
       .withRotationalDeadband(DegreesPerSecond.of(15))
       .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
     );
-    SmartDashboard.putNumber("setpoint", xController.getSetpoint().velocity);
   }
 
   @Override

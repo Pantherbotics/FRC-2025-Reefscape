@@ -6,12 +6,11 @@ package frc.robot.subsystems.GroundIntake;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.GroundIntakeRollerConstants;
-import frc.robot.Constants.IndexerConstants;
 
 public class GroundIntakeRollers extends SubsystemBase {
   /** Creates a new GroundIntake. */
@@ -22,6 +21,10 @@ public class GroundIntakeRollers extends SubsystemBase {
 
   public Command setVoltage(double voltage){
     return this.runOnce(()->m_rollerMotor.setVoltage(voltage)).andThen(Commands.idle(this));
+  }
+
+  public Current getCurrent(){
+    return m_rollerMotor.getStatorCurrent().getValue();
   }
 
   @Override
