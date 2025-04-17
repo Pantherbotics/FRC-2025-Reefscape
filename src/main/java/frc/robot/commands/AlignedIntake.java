@@ -20,18 +20,14 @@ import frc.robot.subsystems.GroundIntake.GroundPivot;
 import frc.robot.subsystems.Vision.Vision;
 
 public class AlignedIntake extends Command {
-  private final GroundIntakeRollers rollers;
-  private final GroundPivot pivot;
   private final CommandSwerveDrivetrain drivetrain;
   private PIDController controller = new PIDController(1, 0, 0);
   private double angle = 0.0;
   private SwerveRequest.ApplyRobotSpeeds req = new SwerveRequest.ApplyRobotSpeeds();
 
-  public AlignedIntake(GroundIntakeRollers rollers, GroundPivot pivot, CommandSwerveDrivetrain drivetrain) {
+  public AlignedIntake(CommandSwerveDrivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    this.rollers = rollers;
-    this.pivot = pivot; 
-    addRequirements(drivetrain, rollers, pivot);
+    addRequirements(drivetrain);
   }
 
   @Override
