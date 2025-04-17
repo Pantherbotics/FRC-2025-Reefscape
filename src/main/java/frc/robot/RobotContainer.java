@@ -242,14 +242,25 @@ public class RobotContainer {
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, false).withTimeout(Seconds.of(0.5)));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
-    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
-    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
+    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
     NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.3)));
     NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
     NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
 
     NamedCommands.registerCommand("zero intake", groundPivot.currentZero().andThen(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)));
+
+    try {
+      PathPlannerPath path_I = PathPlannerPath.fromPathFile("source to I");
+      NamedCommands.registerCommand("pathfind I", AutoBuilder.pathfindThenFollowPath(path_I, DrivetrainConstants.kPathConstraints));
+      PathPlannerPath path_J = PathPlannerPath.fromPathFile("source to I");
+      NamedCommands.registerCommand("pathfind J", AutoBuilder.pathfindThenFollowPath(path_J, DrivetrainConstants.kPathConstraints));
+    } catch (FileVersionException | IOException | ParseException e) {
+      e.printStackTrace();
+    }
+    
+
 
     NamedCommands.registerCommand("intake", 
       Commands.sequence(
