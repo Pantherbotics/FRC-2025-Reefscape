@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -91,7 +92,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtGoal() {
-    return elevatorPosition().isNear(goalHeight, ElevatorConstants.kGoalTolerance);
+    return Utils.isSimulation()?true:elevatorPosition().isNear(goalHeight, ElevatorConstants.kGoalTolerance);
   }
 
   public Distance elevatorPosition() {

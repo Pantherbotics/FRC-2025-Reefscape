@@ -127,9 +127,9 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "source to I"
+                        "name": "pathfind I"
                       }
                     },
                     {
