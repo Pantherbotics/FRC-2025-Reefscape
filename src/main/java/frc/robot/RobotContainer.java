@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -12,8 +13,10 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.IOException;
 import java.util.Optional;
 
+import org.json.simple.parser.ParseException;
 import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.Utils;
@@ -22,7 +25,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.FileVersionException;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -41,7 +49,9 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.GroundIntakeRollerConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AlignToReef;
+import frc.robot.commands.AlignedIntake;
 import frc.robot.commands.AlignToReef.ReefSide;
 import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.Climber.Climber;
@@ -230,13 +240,13 @@ public class RobotContainer {
 // pressing anything that has b() as a joytstick thing also fires this ^
 
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
-    NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, true).withTimeout(Seconds.of(3)));
+    NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, false).withTimeout(Seconds.of(0.5)));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.3)));
-    NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
-    NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)).withTimeout(Seconds.of(2.5)));
+    NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
+    NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
     NamedCommands.registerCommand("zero elevator", elevator.zeroEncoder());
 
     NamedCommands.registerCommand("zero intake", groundPivot.currentZero().andThen(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)));
@@ -252,10 +262,12 @@ public class RobotContainer {
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
       .andThen(
         new ScheduleCommand(rollers.seatCoral())
-        .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1)))
-        .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1))))
+        .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1).andThen(groundIntakeRollers.setVoltage(0))))
+        .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1).andThen(indexer.setVoltage(0)))))
       )
     );
+
+    NamedCommands.registerCommand("intake drive", new AlignedIntake(drivetrain).until(()->indexer.motorCurrent().gt(Amps.of(4))));
 
     // joystick.y().onTrue(
     //   Commands.parallel(

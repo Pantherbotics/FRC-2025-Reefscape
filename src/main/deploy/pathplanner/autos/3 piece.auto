@@ -45,6 +45,12 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "zero intake"
+                }
               }
             ]
           }
@@ -101,38 +107,25 @@
           }
         },
         {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "J to source"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "position L3"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "J to source"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake drive"
+                      }
+                    },
                     {
                       "type": "path",
                       "data": {
@@ -143,6 +136,25 @@
                       "type": "named",
                       "data": {
                         "name": "align left"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "position L3"
                       }
                     }
                   ]
