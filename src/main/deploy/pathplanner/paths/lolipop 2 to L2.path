@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6575,
-        "y": 5.82875
+        "x": 1.4680769230769226,
+        "y": 5.583397435897436
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.924029503899566,
-        "y": 5.523637261099803
+        "x": 1.7346064269764887,
+        "y": 5.278284696997239
       },
       "isLocked": false,
       "linkedName": "lolipop 2"
@@ -48,7 +48,7 @@
   "folder": "side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -49.05418425733685
   },
   "useDefaultConstraints": true
 }
