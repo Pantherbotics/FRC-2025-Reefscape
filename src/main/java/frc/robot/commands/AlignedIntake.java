@@ -33,7 +33,9 @@ public class AlignedIntake extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    angle = drivetrain.getState().Pose.getRotation().getDegrees();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -61,7 +63,7 @@ public class AlignedIntake extends Command {
       }
     }
     double calculated = controller.calculate(drivetrain.getState().Pose.getRotation().getDegrees());
-    drivetrain.setControl(req.withSpeeds(new ChassisSpeeds(-2, 0, calculated)));
+    drivetrain.setControl(req.withSpeeds(new ChassisSpeeds(2, 0, calculated)));
     SmartDashboard.putNumber("calculated", calculated);
     SmartDashboard.putNumber("robot rotation", drivetrain.getState().Pose.getRotation().getDegrees());
     SmartDashboard.putNumber("setpoint", controller.getSetpoint());

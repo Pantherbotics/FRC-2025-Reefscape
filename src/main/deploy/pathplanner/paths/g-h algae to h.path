@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.73725,
-        "y": 3.89825
+        "x": 6.257581967213115,
+        "y": 3.3237192622950817
       },
       "isLocked": false,
       "linkedName": "g-h algae"
@@ -20,8 +20,8 @@
         "y": 4.181
       },
       "prevControl": {
-        "x": 6.659249999999999,
-        "y": 4.346749999999999
+        "x": 6.892930327868852,
+        "y": 4.462551229508197
       },
       "nextControl": null,
       "isLocked": false,

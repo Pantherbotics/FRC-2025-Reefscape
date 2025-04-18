@@ -79,10 +79,10 @@ public class GroundPivot extends SubsystemBase {
 
   public Command currentZero(){
     return this.startEnd(()->setVolts(Volts.of(-8)), ()->setVolts(Volts.of(0)))
-      .until(()->m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-20)))
+      .until(()->m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-35)))
       
       .finallyDo(()->{
-        if( m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-20))){
+        if( m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-35))){
           m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle);
           hasZeroedSinceStart = true;
         }

@@ -6,6 +6,7 @@ package frc.robot.subsystems.GroundIntake;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,6 +26,10 @@ public class GroundIntakeRollers extends SubsystemBase {
 
   public Current getCurrent(){
     return m_rollerMotor.getStatorCurrent().getValue();
+  }
+
+  public AngularVelocity rollerSpeed(){
+    return m_rollerMotor.getVelocity().getValue();
   }
 
   @Override

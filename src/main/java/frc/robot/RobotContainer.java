@@ -4,12 +4,14 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -115,7 +117,7 @@ public class RobotContainer {
   
   private void configureBindings() {
 
-    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(//.or(new Trigger(()->joystick.getHID().getBack() && !rollers.isSeated())).toggleOnTrue(
+    joystick.leftBumper().and(()->!rollers.isSeated()).or(new Trigger(()->joystick.getHID().getBackButtonReleased() && !rollers.isSeated())).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
@@ -213,6 +215,16 @@ public class RobotContainer {
       .alongWith(groundIntakeRollers.setVoltage(2))
       .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
     );
+    
+    new Trigger(()-> groundIntakeRollers.getCurrent().gt(Amp.of(38)) && groundIntakeRollers.rollerSpeed().lt(RotationsPerSecond.of(0.1))).debounce(2).onTrue(
+      indexer.setVoltage(-2)
+      .alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle))
+      .alongWith(groundIntakeRollers.setVoltage(3))
+      .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
+      .withTimeout(3)
+      );
+
+
 
     joystick.leftTrigger().onTrue(
       groundPivot.currentZero()
@@ -280,7 +292,6 @@ public class RobotContainer {
     } catch (FileVersionException | IOException | ParseException e) {
       e.printStackTrace();
     }
-    
 
 
     NamedCommands.registerCommand("intake", 
@@ -299,7 +310,7 @@ public class RobotContainer {
       )
     );
 
-    NamedCommands.registerCommand("intake drive", new AlignedIntake(drivetrain).until(()->indexer.motorCurrent().gt(Amps.of(10))));
+    NamedCommands.registerCommand("intake drive", new AlignedIntake(drivetrain).until(()->indexer.motorCurrent().gt(Amps.of(10))).withTimeout(2));
 
     // joystick.y().onTrue(
     //   Commands.parallel(

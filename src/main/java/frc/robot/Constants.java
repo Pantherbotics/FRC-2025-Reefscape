@@ -241,11 +241,11 @@ public class Constants {
     }
     public static class GroundIntakeRollerConstants {
         public static final int kMotorID = 29;
-        public static final double kinVoltage = -9;
+        public static final double kinVoltage = -9.5;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(40)
-                .withSupplyCurrentLimit(80)
+                .withStatorCurrentLimit(45)
+                .withSupplyCurrentLimit(90)
             )
         ;
     }
@@ -285,9 +285,9 @@ public class Constants {
         private static final Slot0Configs slot0_config = new Slot0Configs()
         .withKP(200)
         .withKI(0)
-        .withKD(0)
+        .withKD(1)
         .withKS(0.23461)
-        .withKV(9)
+        .withKV(4)
         .withKA(0.082634)
         .withKG(0.055231)
         .withGravityType(GravityTypeValue.Arm_Cosine)
@@ -309,7 +309,7 @@ public class Constants {
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                 .withSensorToMechanismRatio(kPivotRatio))
             .withOpenLoopRamps(new OpenLoopRampsConfigs()
-                .withVoltageOpenLoopRampPeriod(0.5)
+                .withVoltageOpenLoopRampPeriod(0.25)
             );
     }
 
