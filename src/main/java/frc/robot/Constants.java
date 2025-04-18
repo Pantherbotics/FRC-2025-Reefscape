@@ -272,7 +272,7 @@ public class Constants {
     }
     
     public static class GroundPivotConstants {
-        public static final double kPivotRatio = (15d/1d) * (50d/22d) * (48d/ 12d);
+        public static final double kPivotRatio = (9d/1d) * (50d/22d) * (48d/ 12d);
         public static final int kMotorID = 27;
 
         public static final Angle kMinAngle = Degrees.of(-45 );
