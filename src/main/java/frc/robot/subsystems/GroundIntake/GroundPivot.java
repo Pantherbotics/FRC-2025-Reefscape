@@ -7,6 +7,7 @@ package frc.robot.subsystems.GroundIntake;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.OunceForce;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -76,14 +78,15 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public Command currentZero(){
-    return this.startEnd(()->setVolts(Volts.of(-7)), ()->setVolts(Volts.of(0)))
-      .until(()->m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10)))
+    return this.startEnd(()->setVolts(Volts.of(-8)), ()->setVolts(Volts.of(0)))
+      .until(()->m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-20)))
+      
       .finallyDo(()->{
-        if(m_pivotMotor.getStatorCurrent().getValue().gt(Amps.of(10))){
+        if( m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-20))){
           m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle);
           hasZeroedSinceStart = true;
         }
-      });
+      }).withName("current zero");
   }
 
   public boolean isAtGoal(){
@@ -96,7 +99,9 @@ public class GroundPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("AlgaeAtGoal", isAtGoal());
-    SmartDashboard.putNumber("AlgaePivot", m_pivotMotor.getPosition().getValue().in(Degrees));
+    SmartDashboard.putBoolean("ground pivot at goal", isAtGoal());
+    SmartDashboard.putNumber("groundPivot", m_pivotMotor.getPosition().getValue().in(Degrees));
+    SmartDashboard.putBoolean("has zeroed", hasZeroedSinceStart);
+    SmartDashboard.putNumber("pivot amps", m_pivotMotor.getStatorCurrent().getValueAsDouble());
   }
 }

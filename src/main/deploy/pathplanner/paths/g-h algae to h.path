@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.134038461538461,
+        "x": 5.802692307692308,
         "y": 4.014679487179487
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.041296143979348,
-        "y": 4.000720077312752
+        "x": 6.73725,
+        "y": 3.89825
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "g-h algae"
     },
     {
       "anchor": {
         "x": 5.802692307692308,
-        "y": 4.014679487179487
+        "y": 4.181
       },
       "prevControl": {
-        "x": 6.78907412417902,
-        "y": 4.022576635474288
+        "x": 6.522750000000001,
+        "y": 4.229749999999999
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "g-h algae"
+      "linkedName": "h"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -179.97027610792023
   },
   "reversed": false,
   "folder": "middle",

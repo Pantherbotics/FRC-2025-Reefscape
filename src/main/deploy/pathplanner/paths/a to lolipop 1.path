@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.134038461538461,
-        "y": 4.014679487179487
+        "x": 3.1492500000000003,
+        "y": 3.8592499999999994
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.041296143979348,
-        "y": 4.000720077312752
+        "x": 3.3949953826859294,
+        "y": 3.924188175819065
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "a"
     },
     {
       "anchor": {
-        "x": 5.802692307692308,
-        "y": 4.014679487179487
+        "x": 1.64775,
+        "y": 4.015249999999999
       },
       "prevControl": {
-        "x": 6.78907412417902,
-        "y": 4.022576635474288
+        "x": 1.3977502123089585,
+        "y": 4.014924186504071
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "g-h algae"
+      "linkedName": "lolipop 1"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "middle",
+  "folder": "side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
