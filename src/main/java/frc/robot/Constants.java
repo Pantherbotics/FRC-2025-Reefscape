@@ -93,8 +93,8 @@ public class Constants {
         public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
         // public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(13.5), Units.inchesToMeters(6), Units.inchesToMeters(8), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(10)));
-        public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(12.75), Units.inchesToMeters(10), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-25)));
-        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(-12.75), Units.inchesToMeters(10), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-10)));
+        public static final Transform3d kRobotToLeftCamTransform = new Transform3d(Units.inchesToMeters(10), Units.inchesToMeters(12.75), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(-25)));
+        public static final Transform3d kRobotToRightCamTransform = new Transform3d(Units.inchesToMeters(10), Units.inchesToMeters(-12.75), Units.inchesToMeters(7.375), new Rotation3d(0, -Units.degreesToRadians(22), Units.degreesToRadians(25)));
         public static final Transform2d kLeftTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(-6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kRightTransform = new Transform2d(Units.inchesToMeters(20), Units.inchesToMeters(6.5), Rotation2d.fromDegrees(-180));
         public static final Transform2d kCenterTransform = new Transform2d(Units.inchesToMeters(17), Units.inchesToMeters(0), Rotation2d.fromDegrees(-180));
@@ -214,7 +214,7 @@ public class Constants {
         public static final Voltage kBackVoltage = Volts.of(-0.5);
         public static final Voltage kOuttakeVoltage = Volts.of(4);
         public static final Time kOuttakeTime = Seconds.of(0.5);
-        public static final Voltage kAlgaeRemovalVoltage = Volts.of(7);
+        public static final Voltage kAlgaeRemovalVoltage = Volts.of(10);
 
 
         public static final SparkBaseConfig kMotorConfig = new SparkFlexConfig()
@@ -309,7 +309,7 @@ public class Constants {
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                 .withSensorToMechanismRatio(kPivotRatio))
             .withOpenLoopRamps(new OpenLoopRampsConfigs()
-                .withVoltageOpenLoopRampPeriod(1)
+                .withVoltageOpenLoopRampPeriod(0.5)
             );
     }
 
@@ -363,7 +363,7 @@ public class Constants {
         static Dictionary<String, EEState> EEStates = new Hashtable<>();
 
         public static void setupPositionTable(){
-            EEStates.put("L1", new EEState(Inches.of(8), Degrees.of(5)));
+            EEStates.put("L1", new EEState(Inches.of(2), Degrees.of(30)));
             EEStates.put("L2", new EEState(Inches.of(18.25), Degrees.of(-15)));
             EEStates.put("L3", new EEState(Inches.of(31), Degrees.of(-1.5)));
             EEStates.put("ground intake", new EEState(Inches.of(0), Degrees.of(30)));

@@ -25,12 +25,9 @@ import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.util.FileVersionException;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -42,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.GroundPivotConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ClimberConstants;
@@ -49,7 +47,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.GroundIntakeRollerConstants;
 import frc.robot.Constants.RobotStates;
 import frc.robot.Constants.RollerConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AlignToReef;
 import frc.robot.commands.AlignedIntake;
 import frc.robot.commands.AlignToReef.ReefSide;
@@ -102,7 +99,7 @@ public class RobotContainer {
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerPosition(pivot::pivotAngle));
-    groundPivot.setDefaultCommand(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).repeatedly());
+    groundPivot.setDefaultCommand(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).repeatedly().withName("default"));
     groundIntakeRollers.setDefaultCommand(groundIntakeRollers.setVoltage(0));
     indexer.setDefaultCommand(indexer.setVoltage(0));
 
@@ -118,7 +115,7 @@ public class RobotContainer {
   
   private void configureBindings() {
 
-    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(
+    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(//.or(new Trigger(()->joystick.getHID().getBack() && !rollers.isSeated())).toggleOnTrue(
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
@@ -135,7 +132,8 @@ public class RobotContainer {
       )
     );
 
-    joystick.leftTrigger().whileTrue(indexer.setVoltage(-1));
+    
+
 
     // L3 commands
     joystick.leftBumper().and(rollers::isSeated).onTrue(
@@ -159,6 +157,10 @@ public class RobotContainer {
         rollers.setSpeedForSeconds(RollerConstants.kOuttakeVoltage, RollerConstants.kOuttakeTime),
         rollers.stopRollers()
       ).withName("L3 right bumper")
+    );
+
+    joystick.leftBumper().debounce(0.13).and(()->!rollers.isSeated()).whileTrue(
+      new AlignedIntake(drivetrain)
     );
 
     // L2 commands
@@ -205,9 +207,28 @@ public class RobotContainer {
       ).withName("Algae removal 1")
     );
 
-    // joystick.back().and(()->!rollers.isSeated()).onTrue(
-    //   rollers.seatCoral()
-    // );
+    joystick.back().and(()->!rollers.isSeated()).whileTrue(
+      indexer.setVoltage(-1)
+      .alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle))
+      .alongWith(groundIntakeRollers.setVoltage(2))
+      .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
+    );
+
+    joystick.leftTrigger().onTrue(
+      groundPivot.currentZero()
+    );
+
+    joystick.rightTrigger().onTrue(
+      Commands.sequence(
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L1"))
+          .raceWith(rollers.setRollerPosition(pivot::pivotAngle)),
+        Commands.waitUntil(()->joystick.getHID().getRightTriggerAxis()<0.5),
+        Commands.waitUntil(()->joystick.getHID().getRightTriggerAxis()>0.5),
+        Commands.waitUntil(()->joystick.getHID().getRightTriggerAxis()<0.5),
+        rollers.setSpeedForSeconds(Volts.of(3), Seconds.of(1)),
+        rollers.stopRollers()
+      ).withName("L1")
+    );
 
     joystick.rightBumper().or(joystick.start()).and(()->!rollers.isSeated()).debounce(0.2, DebounceType.kRising).whileTrue(new AlignToReef(drivetrain, ReefSide.CENTER, false));
     // joystick.a().onTrue(
@@ -240,10 +261,10 @@ public class RobotContainer {
 // pressing anything that has b() as a joytstick thing also fires this ^
 
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
-    NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, false).withTimeout(Seconds.of(0.5)));
+    NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, true));
     NamedCommands.registerCommand("align right", new AlignToReef(drivetrain, ReefSide.RIGHT, true).withTimeout(Seconds.of(3)));
-    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
-    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)));
+    NamedCommands.registerCommand("position L2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L2")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(3));
+    NamedCommands.registerCommand("position L3", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("L3")).raceWith(rollers.setRollerPosition(pivot::pivotAngle)).withTimeout(3));
     NamedCommands.registerCommand("shoot coral", rollers.setRollerSpeed(RollerConstants.kOuttakeVoltage).raceWith(Commands.waitSeconds(0.3)));
     NamedCommands.registerCommand("remove algae 1", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 1")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
     NamedCommands.registerCommand("remove algae 2", new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Algae 2")).andThen(rollers.setRollerSpeed(RollerConstants.kAlgaeRemovalVoltage)));
@@ -266,19 +287,19 @@ public class RobotContainer {
       Commands.sequence(
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
-          groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
-          indexer.setVoltage(IndexerConstants.kInVoltage),
+          groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage).asProxy(),
+          indexer.setVoltage(IndexerConstants.kInVoltage).asProxy(),
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle)).until(rollers::hasCoral)
       .andThen(
-        new ScheduleCommand(rollers.seatCoral())
+        rollers.seatCoral()
         .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1).andThen(groundIntakeRollers.setVoltage(0))))
         .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1).andThen(indexer.setVoltage(0)))))
       )
     );
 
-    NamedCommands.registerCommand("intake drive", new AlignedIntake(drivetrain).until(()->indexer.motorCurrent().gt(Amps.of(4))));
+    NamedCommands.registerCommand("intake drive", new AlignedIntake(drivetrain).until(()->indexer.motorCurrent().gt(Amps.of(10))));
 
     // joystick.y().onTrue(
     //   Commands.parallel(

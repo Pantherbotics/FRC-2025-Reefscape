@@ -9,47 +9,60 @@
           "data": {
             "commands": [
               {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "zero elevator"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "remove algae 2"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "start to I-J algae"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "align center"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "zero intake"
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "start to I-J algae"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "align center"
+                            }
+                          },
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "zero elevator"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "remove algae 2"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -170,15 +183,66 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "I to source"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "I to source"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake drive"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pathfind I"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align left"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "position L2"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "source to J"
+            "name": "shoot coral"
           }
         }
       ]
