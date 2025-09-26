@@ -8,31 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.244779302312682,
-        "y": 4.769875230340826
+        "x": 2.0630145720525235,
+        "y": 4.824728210817373
       },
       "isLocked": false,
       "linkedName": "L"
     },
     {
       "anchor": {
-        "x": 1.4680769230769226,
-        "y": 5.583397435897436
+        "x": 1.066905737704918,
+        "y": 6.0449282786885234
       },
       "prevControl": {
-        "x": 2.3037444285709228,
-        "y": 4.8698534660245665
+        "x": 1.2771025446945163,
+        "y": 5.909586849955938
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "lolipop 2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -44.39056138593108
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8815060908084046,
+      "minWaypointRelativePos": 0.7886989553656221,
       "maxWaypointRelativePos": 0.9988925802879295,
       "constraints": {
         "maxVelocity": 1.0,
@@ -56,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -49.05418425733685
+    "rotation": -64.59228189105153
   },
   "reversed": false,
   "folder": "side",

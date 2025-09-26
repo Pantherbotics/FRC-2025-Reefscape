@@ -58,7 +58,7 @@ public class AlignedIntake extends Command {
 
         //var target:Vision.latestCoralResult.getTargets()  
         // while (Vision.latestCoralResult.getBestTarget().getDetectedObjectClassID() == 0)
-        //   Vision.latestCoralResult.getTargets().remove(Vision.latestCoralResult.getBestTarget().)
+        //   Vision.latestCoralResult.getTargets().remove(Vision.latestCoralResult.getBestTarget().)hfhr
         // }
       }
     }

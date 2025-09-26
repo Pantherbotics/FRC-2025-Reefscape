@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4680769230769226,
-        "y": 5.583397435897436
+        "x": 1.066905737704918,
+        "y": 6.0449282786885234
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7346064269764887,
-        "y": 5.278284696997239
+        "x": 1.3334352416044841,
+        "y": 5.739815539788326
       },
       "isLocked": false,
       "linkedName": "lolipop 2"
@@ -28,7 +28,12 @@
       "linkedName": "L"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.16513394642143145,
+      "rotationDegrees": -19.1621915299656
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -48,7 +53,7 @@
   "folder": "side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -49.05418425733685
+    "rotation": -64.59228189105153
   },
   "useDefaultConstraints": true
 }

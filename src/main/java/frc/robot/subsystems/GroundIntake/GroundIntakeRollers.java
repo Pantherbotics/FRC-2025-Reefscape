@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.GroundIntake;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,6 +23,10 @@ public class GroundIntakeRollers extends SubsystemBase {
 
   public Command setVoltage(double voltage){
     return this.runOnce(()->m_rollerMotor.setVoltage(voltage)).andThen(Commands.idle(this));
+  }
+
+  public Command pulseVoltage(double voltage, double range, double period){
+    return this.run(()->m_rollerMotor.setVoltage(Math.sin(Utils.getCurrentTimeSeconds() * period)*range + voltage));
   }
 
   public Current getCurrent(){

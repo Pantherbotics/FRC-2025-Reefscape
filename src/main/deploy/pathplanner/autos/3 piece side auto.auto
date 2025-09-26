@@ -134,12 +134,6 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "intake drive"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "lolipop 1 to l"
@@ -194,12 +188,6 @@
                       "type": "path",
                       "data": {
                         "pathName": "l to lolipop 2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intake drive"
                       }
                     },
                     {

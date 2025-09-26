@@ -55,6 +55,7 @@ import frc.robot.commands.AlignToReef.ReefSide;
 import frc.robot.commands.MoveEndEffector;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drivetrain.Drive;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Elevator.Elevator;
@@ -91,13 +92,17 @@ public class RobotContainer {
 
   public RobotContainer() {
     drivetrain.registerTelemetry(telemetry::telemeterize);
+    // drivetrain.setDefaultCommand(
+    //   drivetrain.applyRequest(()->drive
+    //     .withVelocityX(-joystick.getLeftY() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
+    //     .withVelocityY(-joystick.getLeftX() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
+    //     .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
+    //   )
+    // );
     drivetrain.setDefaultCommand(
-      drivetrain.applyRequest(()->drive
-        .withVelocityX(-joystick.getLeftY() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
-        .withVelocityY(-joystick.getLeftX() * DrivetrainConstants.kMaxSpeed.in(MetersPerSecond))
-        .withRotationalRate(-joystick.getRightX() * DrivetrainConstants.kMaxRotationRate.in(RadiansPerSecond))
-      )
+      new Drive(drivetrain, joystick.getHID())
     );
+
     elevator.setDefaultCommand(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("Stow")));
     // elevator.setDefaultCommand(Commands.idle(elevator));
     rollers.setDefaultCommand(rollers.setRollerPosition(pivot::pivotAngle));
@@ -122,7 +127,9 @@ public class RobotContainer {
         new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
           groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
-          indexer.setVoltage(IndexerConstants.kInVoltage),
+          //groundIntakeRollers.pulseVoltage(GroundIntakeRollerConstants.kinVoltage, 1, 6),          
+          indexer.pulseVoltage(IndexerConstants.kInVoltage, 0.5, 6),
+          //indexer.setVoltage(IndexerConstants.kInVoltage),
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle).beforeStarting(groundPivot.currentZero().unless(groundPivot::hasZeroed))).until(rollers::hasCoral)
@@ -216,13 +223,13 @@ public class RobotContainer {
       .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
     );
     
-    new Trigger(()-> groundIntakeRollers.getCurrent().gt(Amp.of(38)) && groundIntakeRollers.rollerSpeed().lt(RotationsPerSecond.of(0.1))).debounce(2).onTrue(
-      indexer.setVoltage(-2)
-      .alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle))
-      .alongWith(groundIntakeRollers.setVoltage(3))
-      .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
-      .withTimeout(3)
-      );
+    // new Trigger(()-> groundIntakeRollers.getCurrent().gt(Amp.of(38)) && groundIntakeRollers.rollerSpeed().lt(RotationsPerSecond.of(0.1))).debounce(2).onTrue(
+    //   indexer.setVoltage(-2)
+    //   .alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle))
+    //   .alongWith(groundIntakeRollers.setVoltage(3))
+    //   .alongWith(new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")))
+    //   .withTimeout(3)
+    //   );
 
 
 
@@ -251,9 +258,9 @@ public class RobotContainer {
     // );
 
 
-    joystick.povLeft().toggleOnTrue(
-      rollers.setRollerPosition(()->Rotations.of((joystick.getRightTriggerAxis()-0.5)*0.5))
-    );
+    // joystick.povLeft().toggleOnTrue(
+    //   rollers.setRollerPosition(()->Rotations.of((joystick.getRightTriggerAxis()-0.5)*0.5))
+    // );
       
     joystick.povUp().onTrue(Commands.runOnce(()->drivetrain.resetRotation(Rotation2d.kZero)));
       
@@ -265,7 +272,7 @@ public class RobotContainer {
         );
         
     // joystick.a().onTrue(drivetrain.wheelRadiusCharacterization());
-    joystick.a().toggleOnTrue(groundPivot.setAngleCommand(Degrees.of(100)).alongWith(pivot.setAngleCommand(Degrees.of(-24))).alongWith(Commands.idle()));
+    //joystick.a().toggleOnTrue(groundPivot.setAngleCommand(Degrees.of(100)).alongWith(pivot.setAngleCommand(Degrees.of(-24))).alongWith(Commands.idle()));
     joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle))
       .onTrue(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly().asProxy().withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()));

@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -36,6 +37,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -61,6 +64,7 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
@@ -71,7 +75,6 @@ public class Constants {
 
     public static class DrivetrainConstants{
         
-        public static final LinearVelocity kMaxSpeed = FeetPerSecond.of(15);
         public static final AngularVelocity kMaxRotationRate = RotationsPerSecond.of(1);
 
         public static final ProfiledPIDController kXController = new ProfiledPIDController(10, 0, 0.3, new Constraints(Units.feetToMeters(15), 6)); // Forward/back
@@ -80,8 +83,16 @@ public class Constants {
 
         public static final PIDConstants kTranslationConstants = new PIDConstants(8, 0.3);
         public static final PIDConstants kHeadingConstants = new PIDConstants(7, 0);
+        public static final LinearVelocity kMaxSpeed = MetersPerSecond.of(2);
 
         public static final PathConstraints kPathConstraints = new PathConstraints(kMaxSpeed, MetersPerSecondPerSecond.of(3), kMaxRotationRate, RotationsPerSecondPerSecond.of(3));
+        public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
+        public static final LinearAcceleration kMaxAcceleration = MetersPerSecondPerSecond.of(10);
+
+        public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+                .withDeadband(DrivetrainConstants.kMaxSpeed.in(MetersPerSecond) * 0.1)
+                .withRotationalDeadband(DrivetrainConstants.kMaxSpeed.in(MetersPerSecond) * 0.1) // Add a 10% deadband
+                .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors   
     }
 
 
@@ -234,14 +245,14 @@ public class Constants {
         public static final double kInVoltage = 3.6;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(40)
+                .withStatorCurrentLimit(50)
                 .withSupplyCurrentLimit(80)
             )
         ;
     }
     public static class GroundIntakeRollerConstants {
         public static final int kMotorID = 29;
-        public static final double kinVoltage = -9.5;
+        public static final double kinVoltage = -10.5;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(45)
