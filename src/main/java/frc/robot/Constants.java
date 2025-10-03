@@ -300,7 +300,7 @@ public class Constants {
         .withKS(0.23461)
         .withKV(4)
         .withKA(0.082634)
-        .withKG(1)
+        .withKG(0.085231)
         .withGravityType(GravityTypeValue.Arm_Cosine)
         ;
         public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
