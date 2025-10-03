@@ -289,7 +289,7 @@ public class Constants {
         public static final Angle kMinAngle = Degrees.of(-45 );
         public static final Angle kMaxAngle = Degrees.of(100);
 
-        public static final Angle kUpAngle = Degrees.of(90);
+        public static final Angle kUpAngle = Degrees.of(60);
         public static final Angle kOutAngle = Degrees.of(40);
         public static final Angle kDownAngle = Degrees.of(-45);
         public static final Angle kPositionTolerance = Degrees.of(2);
@@ -300,12 +300,12 @@ public class Constants {
         .withKS(0.23461)
         .withKV(4)
         .withKA(0.082634)
-        .withKG(0.055231)
+        .withKG(1)
         .withGravityType(GravityTypeValue.Arm_Cosine)
         ;
         public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(30)
+                .withStatorCurrentLimit(20)
                 .withSupplyCurrentLimit(90))
             .withSlot0(slot0_config)
             
@@ -320,7 +320,7 @@ public class Constants {
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                 .withSensorToMechanismRatio(kPivotRatio))
             .withOpenLoopRamps(new OpenLoopRampsConfigs()
-                .withVoltageOpenLoopRampPeriod(0.25)
+                .withVoltageOpenLoopRampPeriod(1)
             );
     }
 

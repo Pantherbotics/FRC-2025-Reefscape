@@ -70,7 +70,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setHeightCommand(Distance height) {
-
+  
     return new ConditionalCommand(
         this.runOnce(() -> {
           SmartDashboard.putNumber("Elevator commanded height", height.in(Inches));

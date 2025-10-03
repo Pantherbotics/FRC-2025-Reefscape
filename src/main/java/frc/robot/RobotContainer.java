@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -116,16 +117,12 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", this.autoChooser);
   }
 
-  
- 
-
-  
   private void configureBindings() {
-
-    joystick.leftBumper().and(()->!rollers.isSeated()).or(new Trigger(()->joystick.getHID().getBackButtonReleased() && !rollers.isSeated())).toggleOnTrue(
+    
+    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(//.or(new Trigger(()->joystick.getHID().getBack() && !rollers.isSeated())).toggleOnTrue(
       Commands.sequence(
-        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
+          new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
           groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
           //groundIntakeRollers.pulseVoltage(GroundIntakeRollerConstants.kinVoltage, 1, 6),          
           indexer.pulseVoltage(IndexerConstants.kInVoltage, 0.5, 6),
@@ -141,8 +138,9 @@ public class RobotContainer {
       )
     );
 
-    
-
+    joystick.povRight().onTrue(
+      groundPivot.setAngleCommand(Degree.of(0)).andThen(groundIntakeRollers.setVoltage(Constants.GroundIntakeRollerConstants.kinVoltage))
+    );
 
     // L3 commands
     joystick.leftBumper().and(rollers::isSeated).onTrue(
@@ -277,7 +275,7 @@ public class RobotContainer {
       .onTrue(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly().asProxy().withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()));
     joystick.y().whileTrue(climber.setVoltage(Volts.of(12))).onFalse(climber.setVoltage(Volts.zero()));
-// pressing anything that has b() as a joytstick thing also fires this ^
+    // pressing anything that has b() as a joytstick thing also fires this ^
 
     NamedCommands.registerCommand("align left", new AlignToReef(drivetrain, ReefSide.LEFT, true).withTimeout(Seconds.of(3)));
     NamedCommands.registerCommand("align center", new AlignToReef(drivetrain, ReefSide.CENTER, true));
