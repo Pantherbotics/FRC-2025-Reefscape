@@ -119,6 +119,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     
+    // If the intakePivot is not seated (has coral), then moves the end effector to the ground intake state, while running the rollers and indexer.
     joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(//.or(new Trigger(()->joystick.getHID().getBack() && !rollers.isSeated())).toggleOnTrue(
       Commands.sequence(
         Commands.parallel(

@@ -255,7 +255,7 @@ public class Constants {
         public static final double kinVoltage = -10.5;
         public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(45)
+                .withStatorCurrentLimit(55)
                 .withSupplyCurrentLimit(90)
             )
         ;
@@ -310,7 +310,7 @@ public class Constants {
             .withSlot0(slot0_config)
             
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(10)
+                .withMotionMagicCruiseVelocity(4)
                 .withMotionMagicExpo_kV(slot0_config.kV)
                 .withMotionMagicExpo_kA(slot0_config.kA))
             .withMotorOutput(new MotorOutputConfigs()
