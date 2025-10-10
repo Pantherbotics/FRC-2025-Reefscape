@@ -110,4 +110,9 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("ElevatorAtGoal", isAtGoal());
     SmartDashboard.putNumber("ElevatorPosition", elevatorPosition().in(Inches));
   }
+
+
+  public boolean hasZeroedSinceBoot()                                                                     {
+    return hasZeroedSinceBoot;
+                                                                                                          }
 }

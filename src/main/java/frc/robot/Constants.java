@@ -171,7 +171,7 @@ public class Constants {
         public static final double kEncoderToPivotRatio = (45d/25d);
         public static final double kRotorToPivotRatio = (9d/1d) * (42d/32d) * (60d / 12d);
 
-        public static final Angle kEncoderOffset = Rotations.of(0.625244 - 0.25*kEncoderToPivotRatio);
+        public static final Angle kEncoderOffset = Rotations.of(0.854492 - 0.25*kEncoderToPivotRatio);
         public static final Angle kGoalTolerance = Degrees.of(2);
 
         public static final Angle kMaxAngle = Degrees.of(30);
@@ -305,7 +305,7 @@ public class Constants {
         ;
         public static final TalonFXConfiguration kPivotConstants = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(20)
+                .withStatorCurrentLimit(40)
                 .withSupplyCurrentLimit(90))
             .withSlot0(slot0_config)
             

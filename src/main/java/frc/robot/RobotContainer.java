@@ -4,15 +4,11 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -118,12 +114,11 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    
-    // If the intakePivot is not seated (has coral), then moves the end effector to the ground intake state, while running the rollers and indexer.
-    joystick.leftBumper().and(()->!rollers.isSeated()).toggleOnTrue(//.or(new Trigger(()->joystick.getHID().getBack() && !rollers.isSeated())).toggleOnTrue(
+
+    joystick.leftBumper().and(()->!rollers.isSeated()).or(new Trigger(()->joystick.getHID().getBackButtonReleased() && !rollers.isSeated())).toggleOnTrue(
       Commands.sequence(
+        new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
         Commands.parallel(
-          new MoveEndEffector(elevator, pivot, RobotStates.EEStates.get("ground intake")),
           groundIntakeRollers.setVoltage(GroundIntakeRollerConstants.kinVoltage),
           //groundIntakeRollers.pulseVoltage(GroundIntakeRollerConstants.kinVoltage, 1, 6),          
           indexer.pulseVoltage(IndexerConstants.kInVoltage, 0.5, 6),
@@ -167,9 +162,9 @@ public class RobotContainer {
       ).withName("L3 right bumper")
     );
 
-    joystick.leftBumper().debounce(0.13).and(()->!rollers.isSeated()).whileTrue(
-      new AlignedIntake(drivetrain)
-    );
+    // joystick.leftBumper().debounce(0.13).and(()->!rollers.isSeated()).whileTrue(
+    //   new AlignedIntake(drivetrain)
+    // );
 
     // L2 commands
     joystick.start().and(rollers::isSeated).onTrue(

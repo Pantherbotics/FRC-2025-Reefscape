@@ -61,8 +61,10 @@ public class GroundPivot extends SubsystemBase {
 
   public Command setAngleCommand(Angle angle){
     return this.runOnce(()->{
-      m_goalAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), GroundPivotConstants.kMinAngle.in(Degrees), GroundPivotConstants.kMaxAngle.in(Degrees)));
-      m_pivotMotor.setControl(m_MotionMagicReq.withPosition(angle));
+      if (hasZeroedSinceStart) {
+        m_goalAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), GroundPivotConstants.kMinAngle.in(Degrees), GroundPivotConstants.kMaxAngle.in(Degrees)));
+        m_pivotMotor.setControl(m_MotionMagicReq.withPosition(angle));
+      }
     }).andThen(Commands.idle(this)).until(this::isAtGoal);
   }
   private void setVolts(Voltage volts){
@@ -85,6 +87,7 @@ public class GroundPivot extends SubsystemBase {
         if( m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-35))){
           m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle);
           hasZeroedSinceStart = true;
+          System.out.println("zoerod");
         }
       }).withName("current zero");
   }

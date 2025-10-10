@@ -29,7 +29,7 @@ public class MoveEndEffector extends SequentialCommandGroup {
         pivot.setAngleCommand(endState.angle)
           .alongWith(elevator.setHeightCommand(endState.distance)), 
         ()->RobotStates.needsSafeMovement(elevator.elevatorPosition(), pivot.pivotAngle(), endState)
-      )
+      ).beforeStarting(elevator.zeroEncoder().unless(elevator::hasZeroedSinceBoot))
     );
     addRequirements(elevator, pivot);
   }
