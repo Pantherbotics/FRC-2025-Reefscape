@@ -2,7 +2,6 @@
 
 ![xbox controller](image.png)
 
-
 ### Left Bumper
 - *Doesn't have coral*: Coral intake
 - *Has coral*: moves elevator to L3
@@ -40,9 +39,6 @@
 
 ### DPAD Down
 - Zero elevator
-
-### DPAD Right
-- Move ground pivot up a little and run rollers
 
 ### X Button
 ```java

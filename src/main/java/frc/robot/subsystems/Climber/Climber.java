@@ -49,17 +49,17 @@ public class Climber extends SubsystemBase {
   public boolean isAtGoal(){
     return m_winchMotor.getPosition().getValue().isNear(m_goalAngle, Rotations.of(1));
   }
-
+  
   public Command setServoLocked(boolean locked){
     return this.runOnce(()->{
       m_servo.set(locked?1:0);
     });
   }
-
+  
   public Angle winchAngle(){
     return Rotations.of(m_winchMotor.getPosition().getValueAsDouble()/(ClimberConstants.kUpAngle.in(Rotations) * 4));
   }
-
+  
   @Override
   public void periodic() {
     SmartDashboard.putNumber("winch position", m_winchMotor.getPosition().getValue().in(Rotation));

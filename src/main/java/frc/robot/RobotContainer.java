@@ -126,16 +126,18 @@ public class RobotContainer {
           rollers.setRollerSpeed(RollerConstants.kIntakeVoltage)
         )
       ).alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle).beforeStarting(groundPivot.currentZero().unless(groundPivot::hasZeroed))).until(rollers::hasCoral)
+      // .andThen(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle)) blocking coral seating, bad
       .andThen(
         new ScheduleCommand(rollers.seatCoral())
-        .alongWith(new ScheduleCommand(Commands.idle(groundPivot).withTimeout(0.5)))
+        // .alongWith(new ScheduleCommand(Commands.idle(groundPivot).withTimeout(0.5)))
+        .alongWith(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle)) // this should make the ground pivot go up once seating coral
         .alongWith(new ScheduleCommand(groundIntakeRollers.setVoltage(5).withTimeout(1)))
         .alongWith(new ScheduleCommand(indexer.setVoltage(-0.1).withTimeout(0.5).andThen(indexer.setVoltage(-4).withTimeout(1))))
       )
     );
 
-    joystick.povRight().onTrue(
-      groundPivot.setAngleCommand(Degree.of(0)).andThen(groundIntakeRollers.setVoltage(Constants.GroundIntakeRollerConstants.kinVoltage))
+    joystick.a().onTrue(
+      groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).beforeStarting(groundPivot.currentZero()).onlyIf(()->!groundPivot.hasZeroed())
     );
 
     // L3 commands

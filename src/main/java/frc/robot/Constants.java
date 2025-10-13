@@ -291,7 +291,7 @@ public class Constants {
 
         public static final Angle kUpAngle = Degrees.of(60);
         public static final Angle kOutAngle = Degrees.of(40);
-        public static final Angle kDownAngle = Degrees.of(-45);
+        public static final Angle kDownAngle = Degrees.of(-45); //Rotations.of(0.7);
         public static final Angle kPositionTolerance = Degrees.of(2);
         private static final Slot0Configs slot0_config = new Slot0Configs()
         .withKP(200)
@@ -310,7 +310,7 @@ public class Constants {
             .withSlot0(slot0_config)
             
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(4)
+                .withMotionMagicCruiseVelocity(1)
                 .withMotionMagicExpo_kV(slot0_config.kV)
                 .withMotionMagicExpo_kA(slot0_config.kA))
             .withMotorOutput(new MotorOutputConfigs()
