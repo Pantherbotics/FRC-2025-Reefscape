@@ -286,7 +286,7 @@ public class Constants {
         public static final double kPivotRatio = (9d/1d) * (50d/22d) * (48d/ 12d);
         public static final int kMotorID = 27;
 
-        public static final Angle kMinAngle = Degrees.of(-45 );
+        public static final Angle kMinAngle = Degrees.of(-45);
         public static final Angle kMaxAngle = Degrees.of(100);
 
         public static final Angle kUpAngle = Degrees.of(60);
@@ -310,9 +310,11 @@ public class Constants {
             .withSlot0(slot0_config)
             
             .withMotionMagic(new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(1)
-                .withMotionMagicExpo_kV(slot0_config.kV)
-                .withMotionMagicExpo_kA(slot0_config.kA))
+                .withMotionMagicCruiseVelocity(0.75)
+                .withMotionMagicAcceleration(5)
+                // .withMotionMagicExpo_kV(slot0_config.kV)
+                // .withMotionMagicExpo_kA(slot0_config.kA)
+                )
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive))

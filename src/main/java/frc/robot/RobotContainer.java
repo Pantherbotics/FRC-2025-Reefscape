@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -34,7 +35,9 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -77,6 +80,7 @@ public class RobotContainer {
   public final Visualizer visualizer = new Visualizer(pivot, elevator, groundPivot, climber);
   private final Indexer indexer = new Indexer();
   private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
+  private boolean upAfterIntake = false;
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -137,7 +141,19 @@ public class RobotContainer {
     );
 
     joystick.a().onTrue(
-      groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).beforeStarting(groundPivot.currentZero()).onlyIf(()->!groundPivot.hasZeroed())
+      // groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).beforeStarting(groundPivot.currentZero()).onlyIf(()->!groundPivot.hasZeroed()) faulty implementation
+      new InstantCommand(()->{
+        if (upAfterIntake){
+          upAfterIntake = false;
+          groundPivot.setDefaultCommand(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle).repeatedly().withName("default"));
+          if (!groundPivot.getCurrentCommand().equals(groundPivot.getDefaultCommand()))
+          CommandScheduler.getInstance().schedule(groundPivot.setAngleCommand(GroundPivotConstants.kDownAngle));
+        } else {
+          upAfterIntake = true;
+          groundPivot.setDefaultCommand(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle).repeatedly().withName("default"));
+          CommandScheduler.getInstance().schedule(groundPivot.setAngleCommand(GroundPivotConstants.kUpAngle));
+        }
+      })
     );
 
     // L3 commands
@@ -271,7 +287,7 @@ public class RobotContainer {
     //joystick.a().toggleOnTrue(groundPivot.setAngleCommand(Degrees.of(100)).alongWith(pivot.setAngleCommand(Degrees.of(-24))).alongWith(Commands.idle()));
     joystick.x().debounce(0.25).onTrue(climber.setWinchPosition(ClimberConstants.kUpAngle))
       .onTrue(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly().asProxy().withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()));
+    joystick.b().onTrue(climber.setWinchPosition(Rotations.of(20)).raceWith(groundPivot.setAngleCommand(GroundPivotConstants.kOutAngle).repeatedly()).andThen(groundPivot.setAngleCommand(Degrees.of(90)).repeatedly()));
     joystick.y().whileTrue(climber.setVoltage(Volts.of(12))).onFalse(climber.setVoltage(Volts.zero()));
     // pressing anything that has b() as a joytstick thing also fires this ^
 

@@ -13,6 +13,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -32,7 +33,7 @@ import frc.robot.Constants.GroundPivotConstants;
 
 public class GroundPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(GroundPivotConstants.kMotorID);
-  private final MotionMagicExpoVoltage m_MotionMagicReq = new MotionMagicExpoVoltage(0).withEnableFOC(true);
+  private final MotionMagicVoltage m_MotionMagicReq = new MotionMagicVoltage(0).withEnableFOC(true);
   private Angle m_goalAngle = Degrees.of(90);
   private boolean hasZeroedSinceStart = false;
 
@@ -84,7 +85,7 @@ public class GroundPivot extends SubsystemBase {
       
       .finallyDo(()->{
         if( m_pivotMotor.getTorqueCurrent().getValue().lt(Amps.of(-35))){
-          m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle.minus(Degrees.of(5)));
+          m_pivotMotor.setPosition(GroundPivotConstants.kDownAngle); //.minus(Degrees.of(8)) fix for less slammy into ground, sets zero slightly below
           hasZeroedSinceStart = true;
           System.out.println("zoerod");
         }
